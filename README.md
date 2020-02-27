@@ -1,4 +1,4 @@
-# smart_home_mobile
+# Homey
 
 A new Flutter application.
 

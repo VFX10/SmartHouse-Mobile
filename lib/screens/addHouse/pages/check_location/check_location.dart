@@ -4,12 +4,12 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:smart_home_mobile/design/colors.dart';
-import 'package:smart_home_mobile/helpers/utils.dart';
-import 'package:smart_home_mobile/screens/addHouse/pages/check_location/location_form_page.dart';
-import 'package:smart_home_mobile/screens/addHouse/pages/check_location/location_received.dart';
-import 'package:smart_home_mobile/screens/addHouse/pages/first_setup_template/first_setup_template_page.dart';
-import 'package:smart_home_mobile/screens/addHouse/dataModelManager.dart';
+import 'package:Homey/design/colors.dart';
+import 'package:Homey/helpers/utils.dart';
+import 'package:Homey/screens/addHouse/pages/check_location/location_form_page.dart';
+import 'package:Homey/screens/addHouse/pages/check_location/location_received.dart';
+import 'package:Homey/screens/addHouse/pages/first_setup_template/first_setup_template_page.dart';
+import 'package:Homey/screens/addHouse/dataModelManager.dart';
 
 class CheckLocation extends StatefulWidget {
   CheckLocation({Key key, @required this.submitEvent, this.location = false})
@@ -51,11 +51,11 @@ class _CheckLocationState extends State<CheckLocation>
           await _permissionHandler
                   .checkPermissionStatus(PermissionGroup.location) ==
               PermissionStatus.denied) {
-        throw ('Nu se poate determina daca judetul dumneavoastra beneficeaza de serviciile noastre deoarece nu ati permis accesul la locatie.');
+        throw ('Location permissions denied');
       }
     } else {
       _currentPosition = await Geolocator()
-          .getCurrentPosition(desiredAccuracy: LocationAccuracy.best);
+          .getCurrentPosition(desiredAccuracy: LocationAccuracy.bestForNavigation);
       return await Geolocator().placemarkFromPosition(_currentPosition);
     }
     throw ('Unknown error has occured');
@@ -90,10 +90,10 @@ class _CheckLocationState extends State<CheckLocation>
                   'County': placeMark.data[0].administrativeArea,
                   'Locality': placeMark.data[0].locality,
                   'Street': placeMark.data[0].thoroughfare,
-                  'Number': placeMark.data[0].name,
+                  'Number': placeMark.data[0].subThoroughfare,
                   'Position': placeMark.data[0].position
                 };
-                log("geo", error: geolocation);
+                log(placeMark.data[0].toJson().toString());
                 hds.geolocation = geolocation;
                 return LocationReceivedPage(
                     title: '',

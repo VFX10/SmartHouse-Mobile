@@ -1,4 +1,4 @@
-ro.indecosoft.smart_home_mobile
+ro.indecosoft.Homey
 attr alpha
 attr buttonSize
 attr circleCrop

@@ -1,12 +1,14 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:smart_home_mobile/config.dart';
-import 'package:smart_home_mobile/design/widgets/textfield.dart';
-import 'package:smart_home_mobile/helpers/forms_helpers/form_validations.dart';
-import 'package:smart_home_mobile/helpers/forms_helpers/forms_helpers.dart';
-import 'package:smart_home_mobile/helpers/utils.dart';
-import 'package:smart_home_mobile/helpers/web_requests_helpers/web_requests_helpers.dart';
+import 'package:Homey/config.dart';
+import 'package:Homey/design/colors.dart';
+import 'package:Homey/design/dialogs.dart';
+import 'package:Homey/design/widgets/textfield.dart';
+import 'package:Homey/helpers/forms_helpers/form_validations.dart';
+import 'package:Homey/helpers/forms_helpers/forms_helpers.dart';
+import 'package:Homey/helpers/utils.dart';
+import 'package:Homey/helpers/web_requests_helpers/web_requests_helpers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -92,121 +94,129 @@ class _DevicesState extends State<Devices> with SingleTickerProviderStateMixin {
       'ssid': obj['ssid'],
       'password': obj['password']
     };
-    var Sensors = [
-      'undefined',
-      'UV',
-      'SWITCH',
-      'Temperature and Humidity',
-      'Light',
-      'Gas and Smoke',
-      'Door'
-    ];
+    var sensors = {
+      0: {
+        'text': 'Undefined device',
+      },
+      1: {'text': 'UV Sensor',},
+      2: {'text': 'Switch', 'icon': MdiIcons.powerSocketEu,},
+      3: {'text': 'Temperature and Humidity Sensor', 'icon': MdiIcons.thermometer,},
+      4: {'text': 'Light Sensor', 'icon': MdiIcons.themeLightDark,},
+      5: {'text': 'Gas and Smoke Sensor', 'icon': MdiIcons.smokeDetector,},
+      6: {'text': 'Door Sensor', 'icon': MdiIcons.doorOpen,}
+    };
     _controller.forward();
-    log("data", error: _formData);
+    log("data", error: obj['sensorType']);
     return Scaffold(
       body: Builder(
         builder: (context) => FadeTransition(
           opacity: _animation,
-          child: SingleChildScrollView(
-            child: Form(
-              key: _formKey,
-              child: Container(
-                width: Utils.getPercentValueFromScreenWidth(100, context),
-                padding: EdgeInsets.symmetric(vertical: 40, horizontal: 16),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: <Widget>[
-                    Text(
-                      Sensors[obj['sensorType']],
-                      textAlign: TextAlign.center,
-                    ),
-                    CustomTextField(
-                      inputType: TextInputType.url,
-                      icon: Icon(Icons.email),
-                      controller: sensorNameController,
-                      focusNode: sensorNameFocus,
-                      suffix: IconButton(
-                        onPressed: () {
-                          FormHelpers.clearField(sensorNameController);
-                        },
-                        icon: Icon(Icons.clear),
+          child: Center(
+            child: SingleChildScrollView(
+              child: Form(
+                key: _formKey,
+                child: Container(
+                  width: Utils.getPercentValueFromScreenWidth(100, context),
+                  padding: const EdgeInsets.all(32),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      Icon(sensors[obj['sensorType']]['icon'],size: 40),
+                      SizedBox(height: 10,),
+                      Text(sensors[obj['sensorType']]['text'],textAlign: TextAlign.center, style: TextStyle(fontSize: 30),
+                       ),
+                      CustomTextField(
+                        inputType: TextInputType.url,
+                        icon: Icon(MdiIcons.text),
+                        controller: sensorNameController,
+                        focusNode: sensorNameFocus,
+                        suffix: IconButton(
+                          onPressed: () {
+                            FormHelpers.clearField(sensorNameController);
+                          },
+                          icon: Icon(Icons.clear,),
+                        ),
+                        placeholder: "Sensor name",
                       ),
-                      placeholder: "Sensor name",
-                    ),
-                    CustomTextField(
-                      inputType: TextInputType.number,
-                      icon: Icon(Icons.phone),
-                      controller: readingFrequencyController,
-                      placeholder: "Reading frequency",
-                      focusNode: readingFrequencyFocus,
-                      suffix: IconButton(
-                        onPressed: () {
-                          FormHelpers.clearField(readingFrequencyController);
-                        },
-                        icon: Icon(Icons.clear),
+                      CustomTextField(
+                        inputType: TextInputType.number,
+                        icon: Icon(MdiIcons.clockOutline),
+                        controller: readingFrequencyController,
+                        placeholder: "Reading frequency",
+                        focusNode: readingFrequencyFocus,
+                        suffix: IconButton(
+                          onPressed: () {
+                            FormHelpers.clearField(readingFrequencyController);
+                          },
+                          icon: Icon(Icons.clear),
+                        ),
+                        onSubmitted: clickEvent,
                       ),
-                      onSubmitted: clickEvent,
-                    ),
-                    CustomTextField(
-                      inputType: TextInputType.url,
-                      icon: Icon(Icons.account_circle),
-                      placeholder: "Server",
-                      focusNode: serverFocus,
-                      controller: serverController,
-                      suffix: IconButton(
-                        onPressed: () {
-                          FormHelpers.clearField(serverController);
+                      CustomTextField(
+                        inputType: TextInputType.url,
+                        icon: Icon(MdiIcons.server),
+                        placeholder: "Server",
+                        focusNode: serverFocus,
+                        controller: serverController,
+                        suffix: IconButton(
+                          onPressed: () {
+                            FormHelpers.clearField(serverController);
+                          },
+                          icon: Icon(Icons.clear),
+                        ),
+                        onSubmitted: () {
+                          FormHelpers.fieldFocusChange(
+                              context, serverFocus, portFocus);
                         },
-                        icon: Icon(Icons.clear),
                       ),
-                      onSubmitted: () {
-                        FormHelpers.fieldFocusChange(
-                            context, serverFocus, portFocus);
-                      },
-                    ),
-                    CustomTextField(
-                      inputType: TextInputType.number,
-                      icon: Icon(Icons.account_circle),
-                      placeholder: "Port",
-                      controller: portController,
-                      focusNode: portFocus,
-                      suffix: IconButton(
-                        onPressed: () {
-                          FormHelpers.clearField(portController);
+                      CustomTextField(
+                        inputType: TextInputType.number,
+                        icon: Icon(MdiIcons.numeric),
+                        placeholder: "Port",
+                        controller: portController,
+                        focusNode: portFocus,
+                        suffix: IconButton(
+                          onPressed: () {
+                            FormHelpers.clearField(portController);
+                          },
+                          icon: Icon(Icons.clear),
+                        ),
+                        onSubmitted: () {
+                          FormHelpers.fieldFocusChange(
+                              context, portFocus, sensorNameFocus);
                         },
-                        icon: Icon(Icons.clear),
                       ),
-                      onSubmitted: () {
-                        FormHelpers.fieldFocusChange(
-                            context, portFocus, sensorNameFocus);
-                      },
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(top: 20),
-                    ),
-                    FloatingActionButton.extended(
-                      heroTag: "1",
-                      onPressed: clickEvent,
-                      icon: Icon(Icons.check),
-                      backgroundColor: Colors.green,
-                      label: Text("Finalizare"),
-                    ),
-                    FloatingActionButton.extended(
-                      heroTag: "2",
-                      onPressed: onEvents,
-                      icon: Icon(Icons.check),
-                      backgroundColor: Colors.green,
-                      label: Text("ON"),
-                    ),
-                    FloatingActionButton.extended(
-                      heroTag: "3",
-                      onPressed: offEvents,
-                      icon: Icon(Icons.check),
-                      backgroundColor: Colors.green,
-                      label: Text("OFF"),
-                    ),
-                  ],
+                      Padding(
+                        padding: EdgeInsets.only(top: 20),
+                      ),
+                      FloatingActionButton.extended(
+                        heroTag: "1",
+                        onPressed: clickEvent,
+                        icon: Icon(Icons.check),
+                        backgroundColor: ColorsTheme.primary,
+                        label: Text("Finalizare"),
+                      ),
+                      SizedBox(height: 20,),
+
+                      FloatingActionButton.extended(
+                        heroTag: "2",
+                        onPressed: onEvents,
+                        icon: Icon(Icons.check),
+                        backgroundColor: ColorsTheme.primary,
+                        label: Text("ON"),
+                      ),
+                      SizedBox(height: 10,),
+
+                      FloatingActionButton.extended(
+                        heroTag: "3",
+                        onPressed: offEvents,
+                        icon: Icon(Icons.check),
+                        backgroundColor: ColorsTheme.primary,
+                        label: Text("OFF"),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -215,18 +225,22 @@ class _DevicesState extends State<Devices> with SingleTickerProviderStateMixin {
       ),
     );
   }
+  void onError(e) {
+    log('Error: ', error: e);
+    Dialogs.showSimpleDialog("Error", e.toString(), context);
+  }
 
   void offEvents() {
     var body = {'event': 'off'};
-    WebRequestsHelpers.post(
-            domain: 'http://${obj['ip']}', route: '/api/events', body: body)
-        .then((response) {
-      if (response.json()['state'] != null) {
-        _showDialog("Success", response.json()['state'] == 1 ? "ON" : "OFF");
-      } else {
-        _showDialog("Error", response.json()['error']);
-      }
-    });
+    WebRequestsHelpers.post(domain: 'http://${sensorNameController.text}.local', route: '/api/events', body: body).then(
+            (response) async {
+          var data = response.json();
+          if (data['state'] != null) {
+            Dialogs.showSimpleDialog("Success", response.json()['state'] == 1 ? "ON" : "OFF", context);
+          } else {
+            Dialogs.showSimpleDialog("Error", response.json()['error'], context);
+          }
+        }, onError: onError);
   }
 
   void onEvents() {
@@ -272,7 +286,7 @@ class _DevicesState extends State<Devices> with SingleTickerProviderStateMixin {
         _formKey.currentState.save();
         log("submit", error: _formData);
         var pr = ProgressDialog(context,
-            type: ProgressDialogType.Normal, isDismissible: false);
+            type: ProgressDialogType.Normal, isDismissible: true);
         pr.style(
           message: "Asteptati...",
           insetAnimCurve: Curves.easeInOut,

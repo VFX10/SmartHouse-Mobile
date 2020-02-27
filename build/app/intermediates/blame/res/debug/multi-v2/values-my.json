@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "/Users/voicu/Documents/Projects/Programming/IndecoSoft/SmartHouse/smart_home_mobile/build/app/intermediates/incremental/mergeDebugResources/merged.dir/values-my/values-my.xml",
+            "outputFile": "/Users/voicu/Documents/Projects/Programming/IndecoSoft/SmartHouse/SmartHouse-Mobile/build/app/intermediates/incremental/mergeDebugResources/merged.dir/values-my/values-my.xml",
             "map": [
                 {
                     "source": "/Users/voicu/.gradle/caches/transforms-2/files-2.1/ca0ac22773608ee528589a3d1b848949/jetified-play-services-basement-17.0.0/res/values-my/values.xml",

@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "/Users/voicu/Documents/Projects/Programming/IndecoSoft/SmartHouse/smart_home_mobile/build/app/intermediates/incremental/mergeDebugResources/merged.dir/values-th/values-th.xml",
+            "outputFile": "/Users/voicu/Documents/Projects/Programming/IndecoSoft/SmartHouse/SmartHouse-Mobile/build/app/intermediates/incremental/mergeDebugResources/merged.dir/values-th/values-th.xml",
             "map": [
                 {
                     "source": "/Users/voicu/.gradle/caches/transforms-2/files-2.1/5ac9ad6f13ea0190a3570ea7a43d9f59/play-services-base-17.0.0/res/values-th/values.xml",

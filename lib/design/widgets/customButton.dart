@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:smart_home_mobile/design/colors.dart';
+import 'package:Homey/design/colors.dart';
 
 class CustomButton extends StatelessWidget {
   final String text;

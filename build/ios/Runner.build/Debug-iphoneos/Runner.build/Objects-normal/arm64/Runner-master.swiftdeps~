@@ -1,0 +1,5 @@
+version: "Apple Swift version 5.1.3 (swiftlang-1100.0.282.1 clang-1100.0.33.15)"
+options: "5c1df80916cc258d3dc87ce05c84a938"
+build_time: [1582707304, 917609000]
+inputs:
+  "/Users/voicu/Documents/Projects/Programming/IndecoSoft/SmartHouse/SmartHouse-Mobile/ios/Runner/AppDelegate.swift": [1568267254, 924465895]

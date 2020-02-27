@@ -1,8 +1,8 @@
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:smart_home_mobile/design/colors.dart';
-import 'package:smart_home_mobile/helpers/utils.dart';
+import 'package:Homey/design/colors.dart';
+import 'package:Homey/helpers/utils.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:flare_flutter/provider/asset_flare.dart';
 import 'package:flare_flutter/flare_controller.dart';
@@ -106,7 +106,7 @@ class _LocationReceivedPageState extends State<LocationReceivedPage>
                 textAlign: TextAlign.start,
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: Utils.getPercentValueFromScreenWidth(8, context)),
+                    fontSize: Utils.getPercentValueFromScreenWidth(7, context)),
               ),
               Padding(padding: EdgeInsets.only(top: 10, bottom: 20)),
               Wrap(

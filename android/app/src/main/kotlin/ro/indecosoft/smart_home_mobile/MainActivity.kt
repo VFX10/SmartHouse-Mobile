@@ -1,4 +1,4 @@
-package ro.indecosoft.smart_home_mobile
+package ro.indecosoft.Homey
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity

@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "/Users/voicu/Documents/Projects/Programming/IndecoSoft/SmartHouse/smart_home_mobile/build/app/intermediates/incremental/mergeDebugResources/merged.dir/values/values.xml",
+            "outputFile": "/Users/voicu/Documents/Projects/Programming/IndecoSoft/SmartHouse/SmartHouse-Mobile/build/app/intermediates/incremental/mergeDebugResources/merged.dir/values/values.xml",
             "map": [
                 {
                     "source": "/Users/voicu/.gradle/caches/transforms-2/files-2.1/ae13efc3dbae5c9ee58d4933337fcd21/coordinatorlayout-1.0.0/res/values/values.xml",
@@ -20,6 +20,25 @@
                         "endLines": "2,126,143,232",
                         "endColumns": "60,12,24,24",
                         "endOffsets": "161,9196,10102,15313"
+                    }
+                },
+                {
+                    "source": "/Users/voicu/Documents/Projects/Programming/IndecoSoft/SmartHouse/SmartHouse-Mobile/android/app/src/main/res/values/styles.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "6",
+                        "endColumns": "12",
+                        "endOffsets": "347"
+                    },
+                    "to": {
+                        "startLines": "106",
+                        "startColumns": "4",
+                        "startOffsets": "7862",
+                        "endLines": "110",
+                        "endColumns": "12",
+                        "endOffsets": "8154"
                     }
                 },
                 {
@@ -56,25 +75,6 @@
                         "startOffsets": "5320,6498",
                         "endColumns": "67,166",
                         "endOffsets": "5383,6660"
-                    }
-                },
-                {
-                    "source": "/Users/voicu/Documents/Projects/Programming/IndecoSoft/SmartHouse/smart_home_mobile/android/app/src/main/res/values/styles.xml",
-                    "from": {
-                        "startLines": "2",
-                        "startColumns": "4",
-                        "startOffsets": "55",
-                        "endLines": "6",
-                        "endColumns": "12",
-                        "endOffsets": "347"
-                    },
-                    "to": {
-                        "startLines": "106",
-                        "startColumns": "4",
-                        "startOffsets": "7862",
-                        "endLines": "110",
-                        "endColumns": "12",
-                        "endOffsets": "8154"
                     }
                 },
                 {

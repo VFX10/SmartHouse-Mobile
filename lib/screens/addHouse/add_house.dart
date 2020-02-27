@@ -1,16 +1,21 @@
 import 'dart:developer';
 
+import 'package:Homey/AppDataManager.dart';
+import 'package:Homey/screens/home/home.dart';
+import 'package:Homey/screens/home/homePageState.dart';
 import 'package:flutter/material.dart';
-import 'package:smart_home_mobile/design/colors.dart';
-import 'package:smart_home_mobile/design/dialogs.dart';
-import 'package:smart_home_mobile/helpers/web_requests_helpers/web_requests_helpers.dart';
-import 'package:smart_home_mobile/screens/addHouse/pages/check_location/check_location.dart';
-import 'package:smart_home_mobile/screens/addHouse/pages/first_page/first_page.dart';
+import 'package:Homey/design/colors.dart';
+import 'package:Homey/design/dialogs.dart';
+import 'package:Homey/helpers/web_requests_helpers/web_requests_helpers.dart';
+import 'package:Homey/screens/addHouse/pages/check_location/check_location.dart';
+import 'package:Homey/screens/addHouse/pages/first_page/first_page.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:smart_home_mobile/screens/addHouse/pages/first_setup_template/first_setup_template_page.dart';
-import 'package:smart_home_mobile/screens/addHouse/pages/geolocation_page/geolocation_page.dart';
+import 'package:Homey/screens/addHouse/pages/first_setup_template/first_setup_template_page.dart';
+import 'package:Homey/screens/addHouse/pages/geolocation_page/geolocation_page.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:smart_home_mobile/screens/addHouse/dataModelManager.dart';
+import 'package:Homey/screens/addHouse/dataModelManager.dart';
+import 'package:provider/provider.dart';
+
 
 class AddHouse extends StatefulWidget {
   @override
@@ -18,20 +23,17 @@ class AddHouse extends StatefulWidget {
 }
 
 class _AddHouseState extends State<AddHouse> {
-  PageController controller = PageController();
-  PermissionHandler _permissionHandler = PermissionHandler();
+  final PageController controller = PageController();
+  final PermissionHandler _permissionHandler = PermissionHandler();
   bool location = false;
   String houseName = 'Add a new home';
   var progressBar;
 
   Future requestsPermissions() async {
     var permissionStatus = await _permissionHandler.requestPermissions([
-      PermissionGroup.phone,
       PermissionGroup.location,
       PermissionGroup.locationAlways,
       PermissionGroup.locationWhenInUse,
-      PermissionGroup.camera,
-      PermissionGroup.storage
     ]);
     setState(() {
       location = permissionStatus[PermissionGroup.location] ==
@@ -46,8 +48,6 @@ class _AddHouseState extends State<AddHouse> {
   }
 
   void next() {
-    log('homeName', error: HouseDataState().homeName);
-    log('address', error: HouseDataState().geolocation);
     controller.nextPage(duration: kTabScrollDuration, curve: Curves.ease);
   }
 
@@ -70,17 +70,26 @@ class _AddHouseState extends State<AddHouse> {
       'locality': hds.geolocation['Locality'],
       'street': hds.geolocation['Street'],
       'number': hds.geolocation['Number'],
-      'userEmail': 'voicubabiciu@gmail.com',
+      'userEmail': AppDataManager().userData['email'],
     };
     FocusScope.of(context).unfocus();
 
     progressBar = Dialogs.showProgressDialog('Please wait...', context);
     await progressBar.show();
     WebRequestsHelpers.post(route: '/api/add/house', body: _formData).then(
-        (response) {
+        (response) async {
       progressBar.dismiss();
       if (response.json()['success'] != null) {
-        Navigator.pop(context);
+        await AppDataManager().addHouse(response.json()['house']);
+        final HomePageState state = Provider.of<HomePageState>(context, listen: false);
+        state.setHome(AppDataManager().defaultHome);
+        if(Navigator.canPop(context)){
+          Navigator.pop(context);
+
+        } else {
+          Navigator.pushReplacement(
+              context, MaterialPageRoute(builder: (context) => Home()));
+        }
       } else {
         Dialogs.showSimpleDialog("Error", response.json()['error'], context);
       }
@@ -90,6 +99,10 @@ class _AddHouseState extends State<AddHouse> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: ColorsTheme.background,
+        elevation: 0,
+      ),
       backgroundColor: ColorsTheme.background,
       body: PageView(
         physics: NeverScrollableScrollPhysics(),

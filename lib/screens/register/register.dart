@@ -1,16 +1,16 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:smart_home_mobile/design/colors.dart';
-import 'package:smart_home_mobile/design/dialogs.dart';
-import 'package:smart_home_mobile/design/widgets/customButton.dart';
+import 'package:Homey/design/colors.dart';
+import 'package:Homey/design/dialogs.dart';
+import 'package:Homey/design/widgets/customButton.dart';
 import 'dart:developer';
 
-import 'package:smart_home_mobile/design/widgets/textfield.dart';
+import 'package:Homey/design/widgets/textfield.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:smart_home_mobile/helpers/forms_helpers/form_validations.dart';
-import 'package:smart_home_mobile/helpers/forms_helpers/forms_helpers.dart';
-import 'package:smart_home_mobile/helpers/web_requests_helpers/web_requests_helpers.dart';
+import 'package:Homey/helpers/forms_helpers/form_validations.dart';
+import 'package:Homey/helpers/forms_helpers/forms_helpers.dart';
+import 'package:Homey/helpers/web_requests_helpers/web_requests_helpers.dart';
 
 class Register extends StatefulWidget {
   @override

@@ -2,29 +2,28 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:smart_home_mobile/design/colors.dart';
+import 'package:Homey/design/colors.dart';
 import 'package:flare_flutter/flare_actor.dart';
-import 'package:smart_home_mobile/design/widgets/textfield.dart';
-import 'package:smart_home_mobile/helpers/forms_helpers/form_validations.dart';
-import 'package:smart_home_mobile/helpers/utils.dart';
+import 'package:Homey/design/widgets/textfield.dart';
+import 'package:Homey/helpers/forms_helpers/form_validations.dart';
+import 'package:Homey/helpers/utils.dart';
 import 'package:flare_flutter/provider/asset_flare.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:smart_home_mobile/screens/addHouse/dataModelManager.dart';
+import 'package:Homey/screens/addHouse/dataModelManager.dart';
 
 class FirstPage extends StatefulWidget {
-  FirstPage(
-      {@required this.submitEvent,
-      this.buttonIcon,
-      final this.buttonText = '',
-      this.buttonColor = Colors.green,
-      this.backgroundColor = ColorsTheme.background,
-      this.hasButton = true,
-      @required this.animationWidthFactor,
-      @required this.animationHeightFactor,
-      @required this.animationPath,
-      @required this.animationName,
-      @required this.title,
-      this.description = ''});
+  FirstPage({@required this.submitEvent,
+    this.buttonIcon,
+    final this.buttonText = '',
+    this.buttonColor = Colors.green,
+    this.backgroundColor = ColorsTheme.background,
+    this.hasButton = true,
+    @required this.animationWidthFactor,
+    @required this.animationHeightFactor,
+    @required this.animationPath,
+    @required this.animationName,
+    @required this.title,
+    this.description = ''});
 
   final Function() submitEvent;
   final bool hasButton;
@@ -46,7 +45,6 @@ class _FirstPageState extends State<FirstPage>
     _controller.dispose();
     homeNameController.dispose();
     super.dispose();
-
   }
 
   AnimationController _controller;
@@ -120,7 +118,6 @@ class _FirstPageState extends State<FirstPage>
                 validator: (value) => FormValidation.simpleValidator(value),
                 placeholder: "Home name",
                 onSubmitted: () {
-
                   if (_formKey.currentState.validate()) {
                     FocusScope.of(context).unfocus();
                     hds.homeName = homeNameController.text;
@@ -133,30 +130,27 @@ class _FirstPageState extends State<FirstPage>
                 },
               ),
               Padding(padding: EdgeInsets.only(top: 5, bottom: 5)),
-
-              widget.hasButton
-                  ? Center(
-                      child: FloatingActionButton.extended(
-                        elevation: 20,
-                        onPressed: () {
-                          if (_formKey.currentState.validate()) {
-                            FocusScope.of(context).unfocus();
-                            log('ctrl', error: homeNameController);
-                            hds.homeName = homeNameController.text;
-                            widget.submitEvent();
-                          } else {
-                            setState(() {
-                              autoValidate = true;
-                            });
-                          }
-                        },
-                        tooltip: widget.buttonText,
-                        backgroundColor: widget.buttonColor,
-                        icon: widget.buttonIcon,
-                        label: Text(widget.buttonText),
-                      ),
-                    )
-                  : Center(),
+              if(widget.hasButton)
+                Center(
+                  child: FloatingActionButton.extended(
+                    elevation: 20,
+                    onPressed: () {
+                      if (_formKey.currentState.validate()) {
+                        FocusScope.of(context).unfocus();
+                        hds.homeName = homeNameController.text;
+                        widget.submitEvent();
+                      } else {
+                        setState(() {
+                          autoValidate = true;
+                        });
+                      }
+                    },
+                    tooltip: widget.buttonText,
+                    backgroundColor: widget.buttonColor,
+                    icon: widget.buttonIcon,
+                    label: Text(widget.buttonText),
+                  ),
+                ),
             ],
           ),
         ),

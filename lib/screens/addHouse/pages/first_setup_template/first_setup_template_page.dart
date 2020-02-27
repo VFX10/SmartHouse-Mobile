@@ -1,8 +1,8 @@
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:smart_home_mobile/design/colors.dart';
-import 'package:smart_home_mobile/helpers/utils.dart';
+import 'package:Homey/design/colors.dart';
+import 'package:Homey/helpers/utils.dart';
 import 'package:flare_flutter/provider/asset_flare.dart';
 
 class FirstSetupTemplatePage extends StatefulWidget {

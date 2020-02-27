@@ -8,6 +8,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class WebRequestsHelpers {
   static const String DOMAIN = 'http://192.168.0.118:8000';
+//  static const String DOMAIN = 'http://192.168.43.51:8000';
 
   // static final String domain = 'https://gisdev.indecosoft.net';
   static Future<Response> get(

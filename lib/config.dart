@@ -2,11 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:Homey/design/colors.dart';
 import 'package:connectivity/connectivity.dart';
-import 'package:smart_home_mobile/design/widgets/textfield.dart';
-import 'package:smart_home_mobile/helpers/forms_helpers/forms_helpers.dart';
-import 'package:smart_home_mobile/helpers/web_requests_helpers/web_requests_helpers.dart';
-import 'package:smart_home_mobile/screens/devices/devices.dart';
+import 'package:Homey/design/widgets/textfield.dart';
+import 'package:Homey/helpers/forms_helpers/forms_helpers.dart';
+import 'package:Homey/helpers/web_requests_helpers/web_requests_helpers.dart';
+import 'package:Homey/screens/devices/devices.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -19,16 +20,22 @@ class Config extends StatefulWidget {
 }
 
 class _ConfigState extends State<Config> {
+  Future<void> _updateConnectionStatus(ConnectivityResult result) async {
+    setState(() {});
+  }
+
   Future<Map<String, dynamic>> getNetworkInfo() async {
-    var connectivityResult = await (Connectivity().checkConnectivity());
+//    await Connectivity().requestLocationServiceAuthorization();
+    Connectivity().onConnectivityChanged.listen(_updateConnectionStatus);
+    var connectivityResult = await Connectivity().checkConnectivity();
     if (connectivityResult == ConnectivityResult.mobile) {
       throw ('You have to be connected to wifi');
     } else if (connectivityResult == ConnectivityResult.wifi) {
       // I am connected to a wifi network.
       var data = {
-        'name': await (Connectivity().getWifiName()),
-        'ip': await (Connectivity().getWifiIP()),
-        'bssid': await (Connectivity().getWifiBSSID()),
+        'name': await Connectivity().getWifiName(),
+        'ip': await Connectivity().getWifiIP(),
+        'bssid': await Connectivity().getWifiBSSID(),
       };
       log('data', error: data);
       return data;
@@ -40,7 +47,6 @@ class _ConfigState extends State<Config> {
 
   Future requestsPermissions() async {
     await _permissionHandler.requestPermissions([
-      PermissionGroup.phone,
       PermissionGroup.location,
       PermissionGroup.locationAlways,
       PermissionGroup.locationWhenInUse,
@@ -85,7 +91,6 @@ class _ConfigState extends State<Config> {
       if (onValue == null) {
         _showDialog("Error", "Error configuring sensor");
       } else {
-        pr.dismiss();
         log("devices", error: onValue);
         log("IP: ", error: onValue.values.toList()[0]);
         Future.delayed(Duration(seconds: 5)).then((response) {
@@ -120,11 +125,8 @@ class _ConfigState extends State<Config> {
   initState() {
     super.initState();
 
-    subscription = Connectivity()
-        .onConnectivityChanged
-        .listen((ConnectivityResult result) {
-      // Got a new connectivity status!
-    });
+    subscription =
+        Connectivity().onConnectivityChanged.listen(_updateConnectionStatus);
   }
 
   @override
@@ -141,21 +143,23 @@ class _ConfigState extends State<Config> {
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
-    return FutureBuilder(
-      future: Future.wait([requestsPermissions(), getNetworkInfo()])
-          .then((value) => value[1]),
-      builder: (BuildContext context, AsyncSnapshot value) {
-        if (value.connectionState == ConnectionState.waiting ||
-            value.connectionState == ConnectionState.none) {
-          return Scaffold(body: Center(child: CircularProgressIndicator()));
-        } else {
-          if (value.hasData) {
-            ssidController.text = value.data['name'].toString();
-            return Scaffold(
-              appBar: AppBar(
-                title: Text('Adaugare senzor'),
-              ),
-              body: Container(
+    return Scaffold(
+      appBar: AppBar(
+        elevation: 0,
+        backgroundColor: ColorsTheme.background,
+        title: Text('Add device'),
+      ),
+      body: FutureBuilder(
+        future: Future.wait([requestsPermissions(), getNetworkInfo()])
+            .then((value) => value[1]),
+        builder: (BuildContext context, AsyncSnapshot value) {
+          if (value.connectionState == ConnectionState.waiting ||
+              value.connectionState == ConnectionState.none) {
+            return Scaffold(body: Center(child: CircularProgressIndicator()));
+          } else {
+            if (value.hasData) {
+              ssidController.text = value.data['name'].toString();
+              return Container(
                 padding: EdgeInsets.all(16),
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -186,6 +190,7 @@ class _ConfigState extends State<Config> {
                       ),
                       placeholder: "Password",
                     ),
+                    SizedBox(height: 10,),
                     FloatingActionButton.extended(
                       onPressed: () {
                         startESPTouchConfig(value.data);
@@ -195,15 +200,33 @@ class _ConfigState extends State<Config> {
                     ),
                   ],
                 ),
-              ),
-            );
-          } else {
-            return Center(
-              child: Scaffold(body: Center(child: Text(value.error))),
-            );
+              );
+            } else {
+              return Center(
+                child: Scaffold(
+                  body: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: <Widget>[
+                      Icon(
+                        MdiIcons.wifiOff,
+                        size: 80,
+                      ),
+                      Text(
+                        value.error.toString(),
+                        style: TextStyle(
+                          fontSize: 20,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            }
           }
-        }
-      },
+        },
+      ),
     );
   }
 }

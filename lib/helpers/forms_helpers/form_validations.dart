@@ -1,5 +1,5 @@
 import 'package:flutter/cupertino.dart';
-import 'package:smart_home_mobile/helpers/web_requests_helpers/web_requests_helpers.dart';
+import 'package:Homey/helpers/web_requests_helpers/web_requests_helpers.dart';
 
 class FormValidation {
   static const REQUIRED = 'Field required';
