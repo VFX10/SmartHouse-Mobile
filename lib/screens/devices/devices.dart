@@ -232,7 +232,7 @@ class _DevicesState extends State<Devices> with SingleTickerProviderStateMixin {
 
   void offEvents() {
     var body = {'event': 'off'};
-    WebRequestsHelpers.post(domain: 'http://${sensorNameController.text}.local', route: '/api/events', body: body).then(
+    WebRequestsHelpers.post(domain: 'http://${obj['ip']}', route: '/api/events', body: body).then(
             (response) async {
           var data = response.json();
           if (data['state'] != null) {

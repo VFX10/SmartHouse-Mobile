@@ -78,7 +78,7 @@ class _ConfigState extends State<Config> {
 
   void startESPTouchConfig(Map<String, dynamic> data) async {
     var pr = ProgressDialog(context,
-        type: ProgressDialogType.Normal, isDismissible: false);
+        type: ProgressDialogType.Normal, isDismissible: true);
     pr.style(
       message: "Configuring...",
       insetAnimCurve: Curves.easeInOut,
