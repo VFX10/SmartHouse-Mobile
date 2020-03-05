@@ -1,10 +1,10 @@
+import 'dart:developer';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:Homey/design/colors.dart';
 import 'package:Homey/design/dialogs.dart';
-import 'package:Homey/design/widgets/customButton.dart';
-import 'dart:developer';
+import 'package:Homey/design/widgets/buttons/customButton.dart';
 
 import 'package:Homey/design/widgets/textfield.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -28,28 +28,28 @@ class _RegisterState extends State<Register> {
     lastNameController.dispose();
   }
 
-  TextEditingController passwordController = new TextEditingController(),
-      emailController = new TextEditingController(),
-      firstNameController = new TextEditingController(),
-      lastNameController = new TextEditingController(),
-      passwordVerificationController = new TextEditingController();
-  final FocusNode emailFocusNode = new FocusNode(),
-      passwordFocusNode = new FocusNode(),
-      passwordVerificationFocusNode = new FocusNode(),
-      firstNameFocusNode = new FocusNode(),
-      lastNameFocusNode = new FocusNode();
+  TextEditingController passwordController = TextEditingController(),
+      emailController = TextEditingController(),
+      firstNameController = TextEditingController(),
+      lastNameController = TextEditingController(),
+      passwordVerificationController = TextEditingController();
+  final FocusNode emailFocusNode = FocusNode(),
+      passwordFocusNode = FocusNode(),
+      passwordVerificationFocusNode = FocusNode(),
+      firstNameFocusNode = FocusNode(),
+      lastNameFocusNode = FocusNode();
   bool isPasswordVisible = true;
   bool isPasswordVerificationVisible = true;
   bool termsAndConditions = false;
   bool formAutoValidate = false;
   bool emailExist = true;
   String emailExistMessage;
-  final _formKey = GlobalKey<FormState>();
-  Map<String, dynamic> _formData;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  Map<String, dynamic> _formData = <String, dynamic>{};
 
-  void onError(e) {
+  void onError(dynamic e) {
     log('Error: ', error: e);
-    Dialogs.showSimpleDialog("Error", e.toString(), context);
+    Dialogs.showSimpleDialog('Error', e.toString(), context);
   }
 
   void register(BuildContext context) async {
@@ -63,7 +63,7 @@ class _RegisterState extends State<Register> {
     if (_formKey.currentState.validate()) {
       if (!termsAndConditions) {
         Scaffold.of(context).showSnackBar(SnackBar(
-          content: Text('You must agree the terms and coditions'),
+          content: const Text('You must agree the terms and coditions'),
           action: SnackBarAction(
             label: 'Accept',
             onPressed: () {
@@ -76,16 +76,17 @@ class _RegisterState extends State<Register> {
         ));
       } else {
         _formKey.currentState.save();
-        var progressBar = Dialogs.showProgressDialog('Please wait...', context);
+        final dynamic progressBar =
+            Dialogs.showProgressDialog('Please wait...', context);
         await progressBar.show();
-        WebRequestsHelpers.post(route: '/api/register', body: _formData).then(
-            (response) {
+        await WebRequestsHelpers.post(route: '/api/register', body: _formData)
+            .then((dynamic response) {
           progressBar.dismiss();
           if (response.json()['success'] != null) {
             Navigator.pop(context);
           } else {
             Dialogs.showSimpleDialog(
-                "Error", response.json()['error'], context);
+                'Error', response.json()['error'], context);
           }
         }, onError: onError);
       }
@@ -103,20 +104,17 @@ class _RegisterState extends State<Register> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: ColorsTheme.background,
       appBar: AppBar(
-        elevation: 0,
-        title: Text(
-          "Register",
+        title: const Text(
+          'Register',
           style: TextStyle(color: Colors.white, fontFamily: 'Sriracha'),
         ),
-        backgroundColor: ColorsTheme.background,
       ),
       body: Builder(
-        builder: (context) => Center(
+        builder: (BuildContext context) => Center(
           child: SingleChildScrollView(
             child: Container(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.all(16),
               child: Form(
                   key: _formKey,
                   autovalidate: formAutoValidate,
@@ -129,11 +127,10 @@ class _RegisterState extends State<Register> {
                         children: <Widget>[
                           Expanded(
                             child: CustomTextField(
-                              icon: Icon(MdiIcons.account),
+                              icon: const Icon(MdiIcons.account),
                               controller: firstNameController,
-                              placeholder: "First Name",
-                              validator: (value) =>
-                                  FormValidation.simpleValidator(value),
+                              placeholder: 'First Name',
+                              validator: FormValidation.simpleValidator,
                               focusNode: firstNameFocusNode,
                               onSubmitted: () => FormHelpers.fieldFocusChange(
                                   context,
@@ -141,14 +138,13 @@ class _RegisterState extends State<Register> {
                                   lastNameFocusNode),
                             ),
                           ),
-                          SizedBox(width: 10),
+                          const SizedBox(width: 10),
                           Expanded(
                             child: CustomTextField(
-                              icon: Icon(MdiIcons.account),
+                              icon: const Icon(MdiIcons.account),
                               controller: lastNameController,
-                              placeholder: "Last Name",
-                              validator: (value) =>
-                                  FormValidation.simpleValidator(value),
+                              placeholder: 'Last Name',
+                              validator: FormValidation.simpleValidator,
                               focusNode: lastNameFocusNode,
                               onSubmitted: () => FormHelpers.fieldFocusChange(
                                   context, lastNameFocusNode, emailFocusNode),
@@ -158,22 +154,20 @@ class _RegisterState extends State<Register> {
                       ),
                       CustomTextField(
                         inputType: TextInputType.emailAddress,
-                        icon: Icon(MdiIcons.email),
+                        icon: const Icon(MdiIcons.email),
                         controller: emailController,
-                        placeholder: "Email",
-                        validator: (value) =>
-                            FormValidation.emailValidator(value),
+                        placeholder: 'Email',
+                        validator: FormValidation.emailValidator,
                         focusNode: emailFocusNode,
                         onSubmitted: () => FormHelpers.fieldFocusChange(
                             context, emailFocusNode, passwordFocusNode),
                       ),
                       CustomTextField(
                         isPassword: isPasswordVisible,
-                        icon: Icon(MdiIcons.lockOutline),
+                        icon: const Icon(MdiIcons.lockOutline),
                         controller: passwordController,
                         focusNode: passwordFocusNode,
-                        validator: (value) =>
-                            FormValidation.passwordValidator(value),
+                        validator: FormValidation.passwordValidator,
                         onSubmitted: () => FormHelpers.fieldFocusChange(context,
                             passwordFocusNode, passwordVerificationFocusNode),
                         suffix: IconButton(
@@ -183,18 +177,20 @@ class _RegisterState extends State<Register> {
                               ? MdiIcons.eyeOffOutline
                               : MdiIcons.eyeOutline),
                         ),
-                        placeholder: "Password",
+                        placeholder: 'Password',
                       ),
                       CustomTextField(
                         isPassword: isPasswordVerificationVisible,
-                        icon: Icon(MdiIcons.lockOutline),
+                        icon: const Icon(MdiIcons.lockOutline),
                         controller: passwordVerificationController,
                         focusNode: passwordVerificationFocusNode,
-                        validator: (value) {
-                          var res = FormValidation.passwordValidator(value);
+                        validator: (String value) {
+                          final String res =
+                              FormValidation.passwordValidator(value);
                           if (res == null) {
-                            if (value != passwordController.text)
+                            if (value != passwordController.text) {
                               return 'Password doesn\'t match';
+                            }
                           } else {
                             return res;
                           }
@@ -211,21 +207,21 @@ class _RegisterState extends State<Register> {
                               ? MdiIcons.eyeOffOutline
                               : MdiIcons.eyeOutline),
                         ),
-                        placeholder: "Retype password",
+                        placeholder: 'Retype password',
                       ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
                           Checkbox(
                             value: termsAndConditions,
-                            onChanged: (value) =>
+                            onChanged: (bool value) =>
                                 setState(() => termsAndConditions = value),
                             activeColor: ColorsTheme.primary,
                             checkColor: ColorsTheme.background,
                           ),
-                          SizedBox(width: 5),
-                          Expanded(
-                            child: Text("I accept the Terms and Conditions"),
+                          const SizedBox(width: 5),
+                          const Expanded(
+                            child: Text('I accept the Terms and Conditions'),
                           )
                         ],
                       ),
@@ -240,7 +236,7 @@ class _RegisterState extends State<Register> {
                               onPressed: cancel,
                             ),
                           ),
-                          SizedBox(width: 10),
+                          const SizedBox(width: 10),
                           Expanded(
                             flex: 2,
                             child: CustomButton(

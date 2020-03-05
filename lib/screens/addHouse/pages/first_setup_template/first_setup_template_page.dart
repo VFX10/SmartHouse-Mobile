@@ -1,3 +1,4 @@
+import 'package:Homey/design/widgets/buttons/roundRectangleButton.dart';
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -32,27 +33,12 @@ class FirstSetupTemplatePage extends StatefulWidget {
 
 class _FirstSetupTemplatePageState extends State<FirstSetupTemplatePage>
     with SingleTickerProviderStateMixin {
-  @override
-  void setState(fn) {
-    if (mounted) {
-      super.setState(fn);
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
   AnimationController _controller;
   Animation _animation;
 
-  @override
-  void initState() {
-    super.initState();
+  _FirstSetupTemplatePageState() {
     _controller = AnimationController(
-      vsync: this, // the SingleTickerProviderStateMixin
+      vsync: this,
       duration: Duration(seconds: 1),
     );
     _animation = Tween(
@@ -62,12 +48,18 @@ class _FirstSetupTemplatePageState extends State<FirstSetupTemplatePage>
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     _controller.forward();
     return FadeTransition(
       opacity: _animation,
       child: Container(
-        padding: new EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         color: widget.backgroundColor,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -85,7 +77,7 @@ class _FirstSetupTemplatePageState extends State<FirstSetupTemplatePage>
                 ),
               ),
             ),
-            Padding(padding: EdgeInsets.only(top: 5, bottom: 5)),
+            const SizedBox(height: 10),
             Text(
               widget.title,
               textAlign: TextAlign.center,
@@ -94,26 +86,22 @@ class _FirstSetupTemplatePageState extends State<FirstSetupTemplatePage>
                 fontSize: Utils.getPercentValueFromScreenWidth(8, context),
               ),
             ),
-            Padding(padding: EdgeInsets.only(top: 5, bottom: 5)),
+            const SizedBox(height: 10),
             Text(
               widget.description,
               textAlign: TextAlign.center,
               style: TextStyle(
                   fontSize: Utils.getPercentValueFromScreenWidth(5, context)),
             ),
-            Padding(padding: EdgeInsets.only(top: 5, bottom: 5)),
-            widget.hasButton
-                ? Center(
-                    child: FloatingActionButton.extended(
-                      elevation: 20,
-                      onPressed: widget.submitEvent,
-                      tooltip: widget.buttonText,
-                      backgroundColor: widget.buttonColor,
-                      icon: widget.buttonIcon,
-                      label: Text(widget.buttonText),
-                    ),
-                  )
-                : Center(),
+            const SizedBox(height: 10),
+            if (widget.hasButton)
+              Center(
+                child: RoundMaterialButton(
+                  onPressed: widget.submitEvent,
+                  label: widget.buttonText,
+                  icon: widget.buttonIcon,
+                ),
+              )
           ],
         ),
       ),

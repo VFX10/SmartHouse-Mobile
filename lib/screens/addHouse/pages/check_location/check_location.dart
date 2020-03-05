@@ -4,8 +4,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:Homey/design/colors.dart';
-import 'package:Homey/helpers/utils.dart';
 import 'package:Homey/screens/addHouse/pages/check_location/location_form_page.dart';
 import 'package:Homey/screens/addHouse/pages/check_location/location_received.dart';
 import 'package:Homey/screens/addHouse/pages/first_setup_template/first_setup_template_page.dart';
@@ -107,16 +105,15 @@ class _CheckLocationState extends State<CheckLocation>
                     },
                     isLocationCorrectEvent: widget.submitEvent,
                     buttonIcon: Platform.isAndroid
-                        ? Icon(Icons.arrow_forward)
-                        : Icon(Icons.arrow_forward_ios),
+                        ? const Icon(Icons.arrow_forward)
+                        : const Icon(Icons.arrow_forward_ios),
                     hasButton: false,
-//                  backgroundColor: Color(0xFFFFDC4E),
                     animationWidthFactor: 0.5,
                     animationHeightFactor: 0.4);
               } else {
                 return FirstSetupTemplatePage(
                     title: 'We are sorry',
-                    description: placeMark.error,
+                    description: placeMark.error.toString(),
                     animationPath: 'assets/flare/search_location.flr',
                     animationName: 'search_location',
                     submitEvent: () {
@@ -125,10 +122,9 @@ class _CheckLocationState extends State<CheckLocation>
                       });
                     },
                     buttonIcon: Platform.isAndroid
-                        ? Icon(Icons.arrow_forward)
-                        : Icon(Icons.arrow_forward_ios),
-                    buttonText: 'Continua',
-                    backgroundColor: Color(0xFFFFDC4E),
+                        ? const Icon(Icons.arrow_forward)
+                        : const Icon(Icons.arrow_forward_ios),
+                    buttonText: 'Enter address manually',
                     animationWidthFactor: 0.5,
                     animationHeightFactor: 0.3);
               }

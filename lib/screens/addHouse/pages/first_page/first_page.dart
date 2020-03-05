@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:Homey/design/widgets/buttons/roundRectangleButton.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:Homey/design/colors.dart';
@@ -12,18 +13,19 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:Homey/screens/addHouse/dataModelManager.dart';
 
 class FirstPage extends StatefulWidget {
-  FirstPage({@required this.submitEvent,
-    this.buttonIcon,
-    final this.buttonText = '',
-    this.buttonColor = Colors.green,
-    this.backgroundColor = ColorsTheme.background,
-    this.hasButton = true,
-    @required this.animationWidthFactor,
-    @required this.animationHeightFactor,
-    @required this.animationPath,
-    @required this.animationName,
-    @required this.title,
-    this.description = ''});
+  FirstPage(
+      {@required this.submitEvent,
+      this.buttonIcon,
+      final this.buttonText = '',
+      this.buttonColor = Colors.green,
+      this.backgroundColor = ColorsTheme.background,
+      this.hasButton = true,
+      @required this.animationWidthFactor,
+      @required this.animationHeightFactor,
+      @required this.animationPath,
+      @required this.animationName,
+      @required this.title,
+      this.description = ''});
 
   final Function() submitEvent;
   final bool hasButton;
@@ -70,6 +72,7 @@ class _FirstPageState extends State<FirstPage>
   Widget build(BuildContext context) {
     HouseDataState hds = HouseDataState();
     _controller.forward();
+    log(MediaQuery.of(context).viewInsets.bottom.toString());
     return FadeTransition(
       opacity: _animation,
       child: Form(
@@ -82,18 +85,20 @@ class _FirstPageState extends State<FirstPage>
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: <Widget>[
-              Flexible(
-                child: FractionallySizedBox(
-                  widthFactor: widget.animationWidthFactor,
-                  heightFactor: widget.animationHeightFactor,
-                  child: FlareActor.asset(
-                    AssetFlare(bundle: rootBundle, name: widget.animationPath),
-                    alignment: Alignment.center,
-                    fit: BoxFit.contain,
-                    animation: widget.animationName,
+              if (MediaQuery.of(context).viewInsets.bottom == 0)
+                Flexible(
+                  child: FractionallySizedBox(
+                    widthFactor: widget.animationWidthFactor,
+                    heightFactor: widget.animationHeightFactor,
+                    child: FlareActor.asset(
+                      AssetFlare(
+                          bundle: rootBundle, name: widget.animationPath),
+                      alignment: Alignment.center,
+                      fit: BoxFit.contain,
+                      animation: widget.animationName,
+                    ),
                   ),
                 ),
-              ),
               Padding(padding: EdgeInsets.only(top: 5, bottom: 5)),
               Text(
                 widget.title,
@@ -130,27 +135,32 @@ class _FirstPageState extends State<FirstPage>
                 },
               ),
               Padding(padding: EdgeInsets.only(top: 5, bottom: 5)),
-              if(widget.hasButton)
+              if (widget.hasButton)
                 Center(
-                  child: FloatingActionButton.extended(
-                    elevation: 20,
-                    onPressed: () {
-                      if (_formKey.currentState.validate()) {
-                        FocusScope.of(context).unfocus();
-                        hds.homeName = homeNameController.text;
-                        widget.submitEvent();
-                      } else {
-                        setState(() {
-                          autoValidate = true;
-                        });
-                      }
-                    },
-                    tooltip: widget.buttonText,
-                    backgroundColor: widget.buttonColor,
-                    icon: widget.buttonIcon,
-                    label: Text(widget.buttonText),
-                  ),
-                ),
+                    child: RoundMaterialButton(
+                  onPressed: () {
+                    if (_formKey.currentState.validate()) {
+                      FocusScope.of(context).unfocus();
+                      hds.homeName = homeNameController.text;
+                      widget.submitEvent();
+                    } else {
+                      setState(() {
+                        autoValidate = true;
+                      });
+                    }
+                  },
+                  label: widget.buttonText,
+                      icon: widget.buttonIcon,
+                )
+//                  child: FloatingActionButton.extended(
+//                    elevation: 20,
+//                    onPressed: ,
+//                    tooltip: widget.buttonText,
+//                    backgroundColor: widget.buttonColor,
+//                    icon: widget.buttonIcon,
+//                    label: Text(widget.buttonText),
+//                  ),
+                    ),
             ],
           ),
         ),

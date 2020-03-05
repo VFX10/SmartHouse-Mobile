@@ -1,12 +1,11 @@
+import 'package:Homey/design/widgets/buttons/roundRectangleButton.dart';
 import 'package:flare_flutter/flare_actor.dart';
+import 'package:flare_flutter/provider/asset_flare.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:Homey/design/colors.dart';
 import 'package:Homey/helpers/utils.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:flare_flutter/provider/asset_flare.dart';
-import 'package:flare_flutter/flare_controller.dart';
-
 
 class LocationReceivedPage extends StatefulWidget {
   LocationReceivedPage(
@@ -31,32 +30,17 @@ class LocationReceivedPage extends StatefulWidget {
   final Color buttonColor, backgroundColor;
   final double animationWidthFactor, animationHeightFactor;
   final String animationPath, title, buttonText, animationName;
-  Map<String, dynamic> address;
+  final Map<String, dynamic> address;
 
   _LocationReceivedPageState createState() => _LocationReceivedPageState();
 }
 
 class _LocationReceivedPageState extends State<LocationReceivedPage>
     with SingleTickerProviderStateMixin {
-  @override
-  void setState(fn) {
-    if (mounted) {
-      super.setState(fn);
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
   AnimationController _controller;
   Animation _animation;
 
-  @override
-  void initState() {
-    super.initState();
+  _LocationReceivedPageState() {
     _controller = AnimationController(
       vsync: this, // the SingleTickerProviderStateMixin
       duration: Duration(seconds: 1),
@@ -68,13 +52,19 @@ class _LocationReceivedPageState extends State<LocationReceivedPage>
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     _controller.forward();
     return FadeTransition(
       opacity: _animation,
       child: Scaffold(
         body: Container(
-          padding: new EdgeInsets.all(16.0),
+          padding: const EdgeInsets.all(16.0),
           color: widget.backgroundColor,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -92,7 +82,9 @@ class _LocationReceivedPageState extends State<LocationReceivedPage>
                   ),
                 ),
               ),
-              Padding(padding: EdgeInsets.only(top: 5, bottom: 5)),
+              const SizedBox(
+                height: 10,
+              ),
               Text(
                 widget.title,
                 textAlign: TextAlign.start,
@@ -108,123 +100,29 @@ class _LocationReceivedPageState extends State<LocationReceivedPage>
                     fontWeight: FontWeight.bold,
                     fontSize: Utils.getPercentValueFromScreenWidth(7, context)),
               ),
-              Padding(padding: EdgeInsets.only(top: 10, bottom: 20)),
+              const SizedBox(
+                height: 30,
+              ),
               Wrap(
                 alignment: WrapAlignment.spaceBetween,
                 spacing: 10,
                 runSpacing: 10,
                 children: <Widget>[
-                  RawMaterialButton(
-                    elevation: 20,
+                  RoundMaterialButton(
                     onPressed: widget.submitEvent,
-                    fillColor: ColorsTheme.primary,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(25))),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 11, horizontal: 16),
-                      child:
-                      Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                        Padding(
-                            child: Icon(MdiIcons.pencil),
-                            padding: EdgeInsets.only(right: 10.0)),
-                        Text(
-                          'I will complete it manually',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ]),
-                    ),
+                    label: 'I will complete it manually',
+                    icon: Icon(MdiIcons.pencil),
                   ),
-                  RawMaterialButton(
-                    elevation: 20,
+                  RoundMaterialButton(
                     onPressed: widget.isLocationCorrectEvent,
-                    fillColor: ColorsTheme.primary,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(25))),
-                    child: Container(
-                      padding: EdgeInsets.symmetric(vertical: 11, horizontal: 16),
-                      child:
-                      Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                        Padding(
-                            child: Icon(MdiIcons.check),
-                            padding: EdgeInsets.only(right: 10.0)),
-                        Text(
-                          'This is correct',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ]),
-                    ),
+                    label: 'This is correct',
+                    icon: Icon(MdiIcons.check),
                   ),
                 ],
               ),
             ],
           ),
         ),
-//      bottomNavigationBar: Container(
-//        color: ColorsTheme.background,
-//        padding: EdgeInsets.all(16),
-//        child: Column(
-//          mainAxisSize: MainAxisSize.min,
-//          mainAxisAlignment: MainAxisAlignment.start,
-//          crossAxisAlignment: CrossAxisAlignment.stretch,
-//          children: <Widget>[
-//            Text(
-//              '${widget.address['Street']}, ${widget.address['Number']}\n${widget.address['County'].toString().replaceAll('Județul ', '')}, ${widget.address['Locality']}',
-//              textAlign: TextAlign.start,
-//              style: TextStyle(
-//                  fontWeight: FontWeight.bold,
-//                  fontSize: Utils.getPercentValueFromScreenWidth(8, context)),
-//            ),
-//            Padding(padding: EdgeInsets.only(top: 10, bottom: 20)),
-//            Wrap(
-//              alignment: WrapAlignment.spaceBetween,
-//              spacing: 10,
-//              runSpacing: 10,
-//              children: <Widget>[
-//                RawMaterialButton(
-//                  elevation: 20,
-//                  onPressed: widget.submitEvent,
-//                  fillColor: ColorsTheme.primary,
-//                  shape: RoundedRectangleBorder(
-//                      borderRadius: BorderRadius.all(Radius.circular(25))),
-//                  child: Container(
-//                    padding: EdgeInsets.symmetric(vertical: 11, horizontal: 16),
-//                    child:
-//                        Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
-//                      Padding(
-//                          child: Icon(MdiIcons.pencil),
-//                          padding: EdgeInsets.only(right: 10.0)),
-//                      Text(
-//                        'I will complete it manually',
-//                        style: TextStyle(color: Colors.white),
-//                      ),
-//                    ]),
-//                  ),
-//                ),
-//                RawMaterialButton(
-//                  elevation: 20,
-//                  onPressed: widget.isLocationCorrectEvent,
-//                  fillColor: ColorsTheme.primary,
-//                  shape: RoundedRectangleBorder(
-//                      borderRadius: BorderRadius.all(Radius.circular(25))),
-//                  child: Container(
-//                    padding: EdgeInsets.symmetric(vertical: 11, horizontal: 16),
-//                    child:
-//                        Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
-//                      Padding(
-//                          child: Icon(MdiIcons.check),
-//                          padding: EdgeInsets.only(right: 10.0)),
-//                      Text(
-//                        'This is correct',
-//                        style: TextStyle(color: Colors.white),
-//                      ),
-//                    ]),
-//                  ),
-//                ),
-//              ],
-//            ),
-//          ],
-//        ),
-//      ),
       ),
     );
   }

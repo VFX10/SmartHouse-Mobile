@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:Homey/app_data_manager.dart';
 import 'package:Homey/design/dialogs.dart';
+import 'package:Homey/helpers/sql_helper/data_models/room_model.dart';
 import 'package:Homey/helpers/web_requests_helpers/web_requests_helpers.dart';
-import 'package:Homey/screens/home/homePageState.dart';
+import 'package:Homey/screens/home/home_page_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:Homey/design/colors.dart';
@@ -12,13 +14,11 @@ import 'package:Homey/helpers/forms_helpers/form_validations.dart';
 import 'package:Homey/helpers/utils.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
+import 'package:flare_flutter/flare_actor.dart';
+import 'package:flare_flutter/provider/asset_flare.dart';
 
-
-import '../../../AppDataManager.dart';
 
 class RoomName extends StatefulWidget {
-
-
   @override
   _RoomName createState() => _RoomName();
 }
@@ -42,14 +42,13 @@ class _RoomName extends State<RoomName> with SingleTickerProviderStateMixin {
     progressBar.dismiss();
     Dialogs.showSimpleDialog("Error", e.toString(), context);
   }
-  
-  void addRoom() async {
 
+  void addRoom() async {
     final HomePageState state =
-    Provider.of<HomePageState>(context, listen: false);
+        Provider.of<HomePageState>(context, listen: false);
     var _formData = {
       'roomName': roomNameController.text,
-      'houseId': state.selectedHome['id'],
+      'houseId': state.selectedHome.dbId,
     };
     FocusScope.of(context).unfocus();
 
@@ -58,12 +57,16 @@ class _RoomName extends State<RoomName> with SingleTickerProviderStateMixin {
     WebRequestsHelpers.post(route: '/api/add/room', body: _formData).then(
         (response) async {
       progressBar.dismiss();
-      if (response.json()['success'] != null) {
-        await AppDataManager().addRoom(response.json()['data']);
-
-        state.selectedRooms = AppDataManager().defaultHome['rooms'];
-          Navigator.pop(context);
-
+      final data = response.json();
+      if (data['success'] != null) {
+        final room = RoomModel(
+          dbId: data['data']['id'],
+          houseId: AppDataManager().defaultHome.id,
+          name: data['data']['name'],
+        );
+        await AppDataManager().addRoom(room);
+//        state.selectedRooms.add(room);
+        Navigator.pop(context);
       } else {
         Dialogs.showSimpleDialog("Error", response.json()['error'], context);
       }
@@ -99,10 +102,7 @@ class _RoomName extends State<RoomName> with SingleTickerProviderStateMixin {
   Widget build(BuildContext context) {
     _controller.forward();
     return Scaffold(
-      appBar: AppBar(
-        elevation: 0,
-          backgroundColor: ColorsTheme.background,
-      ),
+      appBar: AppBar(),
       body: FadeTransition(
         opacity: _animation,
         child: Form(
@@ -114,15 +114,21 @@ class _RoomName extends State<RoomName> with SingleTickerProviderStateMixin {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
-                Flexible(
-                    child: Icon(
-                      MdiIcons.floorPlan,
-                      color: Colors.white,
-                      size: 140,
+                if (MediaQuery.of(context).viewInsets.bottom == 0)
+                  Flexible(
+                    child: FractionallySizedBox(
+                      widthFactor: 0.8,
+                      heightFactor: 0.5,
+                      child: FlareActor.asset(
+                        AssetFlare(
+                            bundle: rootBundle,
+                            name: 'assets/flare/add_room.flr'),
+                        alignment: Alignment.center,
+                        fit: BoxFit.contain,
+                        animation: 'animation',
+                      ),
                     ),
-
-                ),
-
+                  ),
                 Padding(padding: EdgeInsets.only(top: 5, bottom: 5)),
                 Text(
                   'Enter your room name',

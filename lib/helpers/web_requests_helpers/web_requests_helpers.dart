@@ -8,9 +8,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class WebRequestsHelpers {
   static const String DOMAIN = 'http://192.168.0.118:8000';
+
 //  static const String DOMAIN = 'http://192.168.43.51:8000';
 
-  // static final String domain = 'https://gisdev.indecosoft.net';
   static Future<Response> get(
       {@required String route,
       String domain = DOMAIN,
@@ -23,13 +23,12 @@ class WebRequestsHelpers {
 
       debuging.log("GET executed on:", error: domain + route);
 
-       return Requests.get(domain + route).then((response) {
-          debuging.log("request payload", error: response.content());
-          return response;
-        }).catchError((e) {
-          throw (e);
-        });
-
+      return Requests.get(domain + route).then((response) {
+        debuging.log("request payload", error: response.content());
+        return response;
+      }).catchError((e) {
+        throw (e);
+      });
     } catch (e, s) {
 //      debuging.log('Error trying to make a web request. Error:', error: e);
       debuging.log('Error trying to make a web request. StackTrace:', error: s);
@@ -41,23 +40,23 @@ class WebRequestsHelpers {
       {@required String route,
       @required Map<dynamic, dynamic> body,
       String domain = DOMAIN,
-      bool securized = false}) async{
+      bool displayResponse = false}) async {
     assert(route != null, 'route argument is required');
     assert(route != null, 'body argument is required');
-      // SharedPreferences prefs = await SharedPreferences.getInstance();
-      // var headers = {'Authorization': 'Bearer ${prefs.getString('token')}'};
+    // SharedPreferences prefs = await SharedPreferences.getInstance();
+    // var headers = {'Authorization': 'Bearer ${prefs.getString('token')}'};
 //      Map<String, String> headers = {
 //        'Content-Type': 'application/json',
 //        "Accept": "*/*",
 //      };
-      debuging.log("POST executed on:", error: domain + route);
-      return Requests.post(domain + route, json: body).then((response) {
+    debuging.log("POST executed on:", error: domain + route);
+    return Requests.post(domain + route, json: body).then((response) {
+      if (displayResponse)
         debuging.log("request payload", error: response.content());
-        return response;
-      }).catchError((e) {
-        throw (e);
-      });
-
+      return response;
+    }).catchError((e) {
+      throw (e);
+    });
   }
 
   static Future<dynamic> put(

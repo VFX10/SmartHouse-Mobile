@@ -1,13 +1,15 @@
-import 'dart:convert';
+import 'dart:developer';
 import 'dart:ui';
 
-import 'package:Homey/AppDataManager.dart';
+import 'package:Homey/app_data_manager.dart';
+import 'package:Homey/helpers/sql_helper/sql_helper.dart';
 import 'package:flutter/material.dart';
-import 'package:Homey/config.dart';
 import 'package:Homey/design/colors.dart';
 import 'package:Homey/design/dialogs.dart';
-import 'package:Homey/design/widgets/customButton.dart';
-import 'dart:developer';
+import 'package:Homey/design/widgets/buttons/customButton.dart';
+
+
+import 'package:progress_dialog/progress_dialog.dart';
 
 import 'package:Homey/design/widgets/textfield.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -31,25 +33,24 @@ class _State extends State<Login> {
     passwordController.dispose();
   }
 
-  TextEditingController passwordController = new TextEditingController();
-  TextEditingController emailController = new TextEditingController();
-  var progressBar;
-  final FocusNode emailFocusNode = new FocusNode(),
-      passwordFocusNode = new FocusNode();
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController emailController = TextEditingController();
+  ProgressDialog progressBar;
+  final FocusNode emailFocusNode = FocusNode(), passwordFocusNode = FocusNode();
   bool isPasswordVisible = true;
-  final _formKey = GlobalKey<FormState>();
-  Map<String, dynamic> _formData;
   bool formAutoValidate = false;
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  void onError(e) {
+  void onError(dynamic e) {
     progressBar.dismiss();
     log('Error: ', error: e);
-    Dialogs.showSimpleDialog("Error", e.toString(), context);
+    Dialogs.showSimpleDialog('Error', e.toString(), context);
   }
 
-  void login() async {
+  Future<dynamic> login() async {
     FocusScope.of(context).unfocus();
-    _formData = {
+
+    final Map<String, dynamic> formData = <String, dynamic>{
       'email': emailController.text,
       'password': passwordController.text
     };
@@ -57,24 +58,23 @@ class _State extends State<Login> {
       _formKey.currentState.save();
 
       await progressBar.show();
-      WebRequestsHelpers.post(route: '/api/login', body: _formData).then(
-          (response) async {
+      await WebRequestsHelpers.post(
+        route: '/api/login',
+        body: formData,
+      ).then((dynamic response) async {
         progressBar.dismiss();
-        var data = response.json();
+        final dynamic data = response.json();
         if (data['success'] != null) {
-          final prefs = await SharedPreferences.getInstance();
+          final dynamic prefs = await SharedPreferences.getInstance();
           await prefs.setString('token', data['token']);
-          await prefs.setString('data', jsonEncode(data['data']));
-          log('token', error: prefs.getString('data'));
+          await SqlHelper().insert(data['data']);
           await AppDataManager().fetchData();
-
-          Navigator.pushReplacement(
-              context, MaterialPageRoute(builder: (context) => Home()));
+          await Navigator.pushReplacement<dynamic, dynamic>(context,
+              MaterialPageRoute<dynamic>(builder: (_) => Home()));
         } else {
-          Dialogs.showSimpleDialog("Error", response.json()['error'], context);
+          Dialogs.showSimpleDialog('Error', response.json()['error'], context);
         }
       }, onError: onError);
-//      progressBar.dismiss();
     } else {
       setState(() {
         formAutoValidate = true;
@@ -84,14 +84,13 @@ class _State extends State<Login> {
 
   void register() {
     FocusScope.of(context).unfocus();
-    Navigator.push(
-        context, MaterialPageRoute(builder: (context) => Register()));
+    Navigator.push<dynamic>(
+        context, MaterialPageRoute<dynamic>(builder: (_) => Register()));
   }
 
   @override
   Widget build(BuildContext context) {
     progressBar = Dialogs.showProgressDialog('Please wait...', context);
-
     return Scaffold(
       backgroundColor: ColorsTheme.background,
       body: Center(
@@ -107,13 +106,13 @@ class _State extends State<Login> {
                   children: <Widget>[
                     Center(
                       child: Image.asset(
-                        'assets/images/logo.png',
+                        'assets/images/Logo.png',
                         height: 60,
                       ),
                     ),
-                    Center(
-                      child: const Text(
-                        "Homey",
+                    const Center(
+                      child: Text(
+                        'Homey',
                         style: TextStyle(
                           color: Colors.white,
                           fontFamily: 'Sriracha',
@@ -123,11 +122,10 @@ class _State extends State<Login> {
                     ),
                     CustomTextField(
                       inputType: TextInputType.emailAddress,
-                      icon: Icon(MdiIcons.email),
+                      icon: const Icon(MdiIcons.email),
                       controller: emailController,
-                      validator: (value) =>
-                          FormValidation.emailValidator(value),
-                      placeholder: "Email",
+                      validator: FormValidation.emailValidator,
+                      placeholder: 'Email',
                       focusNode: emailFocusNode,
                       onSubmitted: () {
                         FormHelpers.fieldFocusChange(
@@ -136,11 +134,10 @@ class _State extends State<Login> {
                     ),
                     CustomTextField(
                       isPassword: isPasswordVisible,
-                      icon: Icon(MdiIcons.lockOutline),
+                      icon: const Icon(MdiIcons.lockOutline),
                       controller: passwordController,
                       focusNode: passwordFocusNode,
-                      validator: (value) =>
-                          FormValidation.simpleValidator(value),
+                      validator:  FormValidation.simpleValidator,
                       onSubmitted: login,
                       suffix: IconButton(
                         onPressed: () {
@@ -152,16 +149,16 @@ class _State extends State<Login> {
                             ? MdiIcons.eyeOffOutline
                             : MdiIcons.eyeOutline),
                       ),
-                      placeholder: "Password",
+                      placeholder: 'Password',
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(vertical: 10.0),
                       child: GestureDetector(
-                        child: Text(
+                        onTap: () => log('password Forgot'),
+                        child: const Text(
                           'Forgot your password?',
                           style: TextStyle(fontSize: 18),
                         ),
-                        onTap: () => log('password Forgot'),
                       ),
                     ),
                     Row(
@@ -175,7 +172,7 @@ class _State extends State<Login> {
                             onPressed: register,
                           ),
                         ),
-                        SizedBox(width: 10),
+                        const SizedBox(width: 10),
                         Expanded(
                           flex: 2,
                           child: CustomButton(
@@ -191,6 +188,5 @@ class _State extends State<Login> {
         ),
       ),
     );
-
   }
 }

@@ -1,5 +1,4 @@
-import 'dart:ui';
-
+import 'package:Homey/design/widgets/buttons/roundRectangleButton.dart';
 import 'package:flutter/material.dart';
 import 'package:Homey/design/colors.dart';
 import 'package:Homey/design/dialogs.dart';
@@ -13,8 +12,10 @@ import 'package:Homey/screens/addHouse/dataModelManager.dart';
 
 class LocationFormPage extends StatefulWidget {
   LocationFormPage({@required this.autoDetectEvent, @required this.submit});
+
   final Function() autoDetectEvent;
   final Function() submit;
+
   @override
   _LocationFormPageState createState() => _LocationFormPageState();
 }
@@ -47,9 +48,11 @@ class _LocationFormPageState extends State<LocationFormPage> {
     log('Error: ', error: e);
     Dialogs.showSimpleDialog("Error", e.toString(), context);
   }
+
   HouseDataState hds = HouseDataState();
+
   finish() {
-    if(_formKey.currentState.validate()){
+    if (_formKey.currentState.validate()) {
       hds.geolocation = {
         'Country': countryController.text,
         'County': countyController.text,
@@ -58,12 +61,11 @@ class _LocationFormPageState extends State<LocationFormPage> {
         'Number': numberController.text,
       };
       widget.submit();
-    } else{
+    } else {
       setState(() {
         formAutoValidate = true;
       });
     }
-
   }
 
   void cancel() {
@@ -72,29 +74,32 @@ class _LocationFormPageState extends State<LocationFormPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (hds.geolocation != null) {
+      if (hds.geolocation.containsKey('Country')) {
+        countryController.text = hds.geolocation['Country'];
+      }
+      if (hds.geolocation.containsKey('County')) {
+        countyController.text =
+            hds.geolocation['County'].toString().replaceAll('Județul ', '');
+      }
+      if (hds.geolocation.containsKey('Locality')) {
+        localityController.text = hds.geolocation['Locality'];
+      }
+      if (hds.geolocation.containsKey('Street')) {
+        streetController.text = hds.geolocation['Street'];
+      }
+      if (hds.geolocation.containsKey('Number')) {
+        numberController.text = hds.geolocation['Number'];
+      }
+    }
 
-    if(hds.geolocation.containsKey('Country')){
-      countryController.text = hds.geolocation['Country'];
-    }
-    if(hds.geolocation.containsKey('County')){
-      countyController.text = hds.geolocation['County'].toString().replaceAll('Județul ', '');
-    }
-    if(hds.geolocation.containsKey('Locality')){
-      localityController.text = hds.geolocation['Locality'];
-    }
-    if(hds.geolocation.containsKey('Street')){
-      streetController.text = hds.geolocation['Street'];
-    }
-    if(hds.geolocation.containsKey('Number')){
-      numberController.text = hds.geolocation['Number'];
-    }
     return Scaffold(
       backgroundColor: ColorsTheme.background,
       body: Builder(
         builder: (context) => Center(
           child: SingleChildScrollView(
             child: Container(
-              padding: EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 40),
               child: Form(
                   key: _formKey,
                   autovalidate: formAutoValidate,
@@ -104,7 +109,7 @@ class _LocationFormPageState extends State<LocationFormPage> {
                     children: <Widget>[
                       CustomTextField(
                         inputType: TextInputType.text,
-                        icon: Icon(MdiIcons.map),
+                        icon: const Icon(MdiIcons.map),
                         controller: countryController,
                         placeholder: "Country",
                         validator: (value) =>
@@ -115,7 +120,7 @@ class _LocationFormPageState extends State<LocationFormPage> {
                       ),
                       CustomTextField(
                         inputType: TextInputType.text,
-                        icon: Icon(MdiIcons.mapMarker),
+                        icon: const Icon(MdiIcons.mapMarker),
                         controller: countyController,
                         placeholder: "County",
                         validator: (value) =>
@@ -126,7 +131,7 @@ class _LocationFormPageState extends State<LocationFormPage> {
                       ),
                       CustomTextField(
                         inputType: TextInputType.text,
-                        icon: Icon(MdiIcons.homeCity),
+                        icon: const Icon(MdiIcons.homeCity),
                         controller: localityController,
                         placeholder: "Locality",
                         validator: (value) =>
@@ -141,23 +146,21 @@ class _LocationFormPageState extends State<LocationFormPage> {
                           Expanded(
                             flex: 2,
                             child: CustomTextField(
-                              icon: Icon(MdiIcons.account),
+                              icon: const Icon(MdiIcons.account),
                               controller: streetController,
                               placeholder: "Street",
                               validator: (value) =>
                                   FormValidation.simpleValidator(value),
                               focusNode: streetFocusNode,
                               onSubmitted: () => FormHelpers.fieldFocusChange(
-                                  context,
-                                  streetFocusNode,
-                                  numberFocusNode),
+                                  context, streetFocusNode, numberFocusNode),
                             ),
                           ),
-                          SizedBox(width: 10),
+                          const SizedBox(width: 10),
                           Expanded(
                             flex: 1,
                             child: CustomTextField(
-                              icon: Icon(MdiIcons.numeric),
+                              icon: const Icon(MdiIcons.numeric),
                               controller: numberController,
                               placeholder: "Number",
                               validator: (value) =>
@@ -168,51 +171,21 @@ class _LocationFormPageState extends State<LocationFormPage> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 10),
+                      const SizedBox(height: 10),
                       Wrap(
                         alignment: WrapAlignment.spaceBetween,
                         spacing: 10,
                         runSpacing: 10,
                         children: <Widget>[
-                          RawMaterialButton(
-                            elevation: 20,
+                          RoundMaterialButton(
                             onPressed: widget.autoDetectEvent,
-                            fillColor: ColorsTheme.primary,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(Radius.circular(25))),
-                            child: Container(
-                              padding: EdgeInsets.symmetric(vertical: 11, horizontal: 16),
-                              child:
-                              Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                                Padding(
-                                    child: Icon(MdiIcons.crosshairsGps),
-                                    padding: EdgeInsets.only(right: 10.0)),
-                                Text(
-                                  'Auto detect location',
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ]),
-                            ),
+                            label: 'Auto detect location',
+                            icon: const Icon(MdiIcons.crosshairsGps),
                           ),
-                          RawMaterialButton(
-                            elevation: 20,
+                          RoundMaterialButton(
                             onPressed: finish,
-                            fillColor: ColorsTheme.primary,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.all(Radius.circular(25))),
-                            child: Container(
-                              padding: EdgeInsets.symmetric(vertical: 11, horizontal: 16),
-                              child:
-                              Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                                Padding(
-                                    child: Icon(MdiIcons.check),
-                                    padding: EdgeInsets.only(right: 10.0)),
-                                Text(
-                                  'Add your house',
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ]),
-                            ),
+                            label: 'Add your house',
+                            icon: const Icon(MdiIcons.check),
                           ),
                         ],
                       ),
