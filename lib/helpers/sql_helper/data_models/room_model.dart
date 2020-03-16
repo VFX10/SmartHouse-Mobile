@@ -1,3 +1,4 @@
+import 'package:Homey/data/on_result_callback.dart';
 import 'package:Homey/helpers/sql_helper/data_models/sensor_model.dart';
 
 class RoomModel {
@@ -12,7 +13,7 @@ class RoomModel {
   // Convert a Dog into a Map. The keys must correspond to the names of the
   // columns in the database.
   Map<String, dynamic> toMap() {
-    return {
+    return <String, dynamic>{
       'id': id,
       'dbId': dbId,
       'houseId': houseId,

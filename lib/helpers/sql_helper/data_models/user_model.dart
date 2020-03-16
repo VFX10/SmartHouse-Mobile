@@ -7,7 +7,7 @@ class UserDataModel {
   final String lastName;
 
   Map<String, dynamic> toMap() {
-    return {
+    return <String, dynamic>{
       'id': id,
       'email': email,
       'firstName': firstName,

@@ -92,13 +92,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.2"
-  dotted_border:
-    dependency: "direct dev"
-    description:
-      name: dotted_border
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "1.0.4"
   equatable:
     dependency: transitive
     description:
@@ -106,6 +99,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.0"
+  event_bus:
+    dependency: transitive
+    description:
+      name: event_bus
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.1.1"
   flare_dart:
     dependency: transitive
     description:
@@ -132,6 +132,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_staggered_animations:
+    dependency: "direct dev"
+    description:
+      name: flutter_staggered_animations
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.2"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -149,6 +156,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "5.3.0"
+  get_it:
+    dependency: "direct dev"
+    description:
+      name: get_it
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "4.0.0"
   google_api_availability:
     dependency: transitive
     description:
@@ -226,13 +240,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.8"
-  nested:
-    dependency: transitive
+  mqtt_client:
+    dependency: "direct dev"
     description:
-      name: nested
+      name: mqtt_client
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.4"
+    version: "6.0.0"
   path:
     dependency: transitive
     description:
@@ -240,20 +254,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.6.4"
-  path_drawing:
-    dependency: transitive
-    description:
-      name: path_drawing
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.4.1"
-  path_parsing:
-    dependency: transitive
-    description:
-      name: path_parsing
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.4"
   pedantic:
     dependency: transitive
     description:
@@ -282,20 +282,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.2"
-  progress_dialog:
+  pull_to_refresh:
     dependency: "direct dev"
     description:
-      name: progress_dialog
+      name: pull_to_refresh
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.2.1"
-  provider:
-    dependency: "direct dev"
-    description:
-      name: provider
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "4.0.4"
+    version: "1.5.8"
   quiver:
     dependency: transitive
     description:
@@ -310,6 +303,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.0.5"
+  rxdart:
+    dependency: "direct dev"
+    description:
+      name: rxdart
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.23.1"
   shared_preferences:
     dependency: "direct dev"
     description:

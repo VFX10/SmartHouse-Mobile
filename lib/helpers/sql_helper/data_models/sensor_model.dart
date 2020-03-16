@@ -1,22 +1,19 @@
-// Update the Dog class to include a `toMap` method.
 class SensorModel {
+  SensorModel({this.id, this.dbId, this.roomId, this.name, this.sensorType, this.readingFrequency, this.ipAddress, this.macAddress, this.networkStatus});
+
   final int id;
   final int dbId;
   final int roomId;
-  final String name;
-  final int sensorType;
+   String name;
+   int sensorType;
   final String ipAddress;
   final String macAddress;
-  final String networkStatus;
-  final int readingFrequency;
+   dynamic networkStatus;
+   int readingFrequency;
+   String account;
 
-
-  SensorModel({this.id, this.dbId, this.roomId, this.name, this.sensorType, this.readingFrequency, this.ipAddress, this.macAddress, this.networkStatus});
-
-  // Convert a Dog into a Map. The keys must correspond to the names of the
-  // columns in the database.
   Map<String, dynamic> toMap() {
-    return {
+    return <String, dynamic>{
       'id': id,
       'dbId': dbId,
       'roomId': roomId,
@@ -26,6 +23,7 @@ class SensorModel {
       'ipAddress': ipAddress,
       'macAddress': macAddress,
       'networkStatus': networkStatus,
+      'account': account,
     };
   }
 }

@@ -12,7 +12,7 @@ class HomeModel {
   final List<RoomModel> rooms;
 
   Map<String, dynamic> toMap() {
-    return {
+    return <String, dynamic>{
       'id': id,
       'dbId': dbId,
       'userId': userId,

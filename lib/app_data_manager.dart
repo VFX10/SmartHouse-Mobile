@@ -11,6 +11,7 @@ class AppDataManager {
   factory AppDataManager() {
     return _instance;
   }
+
   AppDataManager._internal() {
     log('created instance of AppDataManager');
   }
@@ -30,9 +31,10 @@ class AppDataManager {
     if (houses.isEmpty) {
       await prefs.setInt('defaultHomeId', 1);
     }
-    houses.add(house);
-    defaultHome ??= houses[0];
+    houses.clear();
+    // ignore: cascade_invocations
     houses.addAll(await SqlHelper().getAllHouses());
+    defaultHome ??= houses[0];
   }
 
   Future<dynamic> addRoom(RoomModel room) async {
@@ -61,24 +63,31 @@ class AppDataManager {
     userData = null;
     defaultHome = null;
     houses.clear();
+    sensors.clear();
     await prefs.remove('defaultHomeId');
     await prefs.remove('token');
   }
 
-  Future<dynamic> fetchData() async {
+  Future<String> fetchData() async {
+    houses.clear();
+    sensors.clear();
     prefs = await SharedPreferences.getInstance();
     token = prefs.getString('token') ?? '';
+    if (token.isEmpty) {
+      return '';
+    }
     userData = await SqlHelper().getUserData();
-    defaultHome = await SqlHelper()
-        .getHomeInfoById(prefs.getInt('defaultHomeId') ?? 1);
+    defaultHome =
+        await SqlHelper().getHomeInfoById(prefs.getInt('defaultHomeId') ?? 1);
     houses.addAll(await SqlHelper().getAllHouses());
     sensors.addAll(await SqlHelper().getAllSensors());
+//    await SqlHelper().selectAll();
+//    await removeData();
+    return token;
   }
 
-  Future<dynamic>  changeDefaultHome(int homeId) async {
+  Future<dynamic> changeDefaultHome(int homeId) async {
     defaultHome = await SqlHelper().getHomeInfoById(homeId);
     await prefs.setInt('defaultHomeId', homeId);
   }
-
-
 }

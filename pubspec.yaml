@@ -31,17 +31,19 @@ dev_dependencies:
   connectivity: ^0.4.8+1
   flare_flutter: ^2.0.1
   permission_handler: ^4.2.0+hotfix.3
-  progress_dialog: ^1.2.1
   geolocator: ^5.2.1
-  provider: ^4.0.4
   sqflite: ^1.2.1
   curved_navigation_bar: ^0.3.1
   material_design_icons_flutter: ^3.4.4995
   requests: ^3.0.3
   shared_preferences: ^0.5.6+2
   intl: ^0.15.8
-  dotted_border: ^1.0.2
   flip_card: ^0.4.4
+  mqtt_client: ^6.0.0
+  rxdart: ^0.23.1
+  get_it: ^4.0.0
+  pull_to_refresh: ^1.5.7
+  flutter_staggered_animations: ^0.1.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
