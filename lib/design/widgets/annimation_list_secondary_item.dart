@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class AnimationListSecondaryItem extends StatelessWidget {
-  AnimationListSecondaryItem(this.title) : super();
+  const AnimationListSecondaryItem(this.title) : super();
   final String title;
   @override
   Widget build(BuildContext context) {
@@ -9,7 +9,7 @@ class AnimationListSecondaryItem extends StatelessWidget {
       child: Text(
         title.toString(),
         textDirection: TextDirection.ltr,
-        style: TextStyle(color: Color(0xFF2E1E7A), fontWeight: FontWeight.bold),
+        style: TextStyle(color: const Color(0xFF2E1E7A), fontWeight: FontWeight.bold),
       ),
     );
   }
