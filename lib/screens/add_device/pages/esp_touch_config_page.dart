@@ -1,222 +1,196 @@
-import 'dart:async';
-import 'dart:convert';
-import 'dart:developer';
-
+import 'package:Homey/data/devices_states/add_device_state.dart';
+import 'package:Homey/data/models/devices_models/network_config_model.dart';
+import 'package:Homey/data/devices_states/network_status_state.dart';
+import 'package:Homey/data/on_result_callback.dart';
 import 'package:Homey/design/dialogs.dart';
-import 'package:Homey/design/widgets/buttons/roundRectangleButton.dart';
-import 'package:Homey/screens/addDevice/AddDeviceDataManager.dart';
+import 'package:Homey/design/widgets/buttons/round_rectangle_button.dart';
+import 'package:Homey/helpers/forms_helpers/form_validations.dart';
+import 'package:Homey/helpers/utils.dart';
+import 'package:Homey/main.dart';
 import 'package:connectivity/connectivity.dart';
 import 'package:Homey/design/widgets/textfield.dart';
-import 'package:Homey/helpers/web_requests_helpers/web_requests_helpers.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:permission_handler/permission_handler.dart';
-import 'package:smartconfig/smartconfig.dart';
+import 'package:flare_flutter/provider/asset_flare.dart';
 
-class EspTouchConfigPage extends StatefulWidget {
-  EspTouchConfigPage({@required this.event}) : super();
+import 'package:flare_flutter/flare_actor.dart';
+
+class EspTouchConfigPage extends StatelessWidget {
+  EspTouchConfigPage({@required this.state, @required this.event});
+
   final Function event;
+  final AddDeviceState state;
+  final TextEditingController passwordController = TextEditingController();
+  final TextEditingController _networkSSIDController = TextEditingController();
+  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  final GlobalKey<State> _keyLoader = GlobalKey<State>();
 
-  @override
-  _EspTouchConfigPageState createState() => _EspTouchConfigPageState();
-}
+  final NetworkStatusState _networkState = getIt.get<NetworkStatusState>();
 
-class _EspTouchConfigPageState extends State<EspTouchConfigPage> with SingleTickerProviderStateMixin {
-  _EspTouchConfigPageState() {
-    _controller = AnimationController(
-      vsync: this,
-      duration: Duration(seconds: 1),
-    );
-    _animation = Tween(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(_controller);
-    subscription =
-        Connectivity().onConnectivityChanged.listen(_updateConnectionStatus);
-  }
-
-  Future<void> _updateConnectionStatus(ConnectivityResult result) async {
-    setState(() {});
-  }
-
-  var progressBar;
-
-  Future<Map<String, dynamic>> getNetworkInfo() async {
-//    await Connectivity().requestLocationServiceAuthorization();
-    Connectivity().onConnectivityChanged.listen(_updateConnectionStatus);
-    var connectivityResult = await Connectivity().checkConnectivity();
-
-    if (connectivityResult == ConnectivityResult.mobile) {
-      throw ('You have to be connected to wifi');
-    } else if (connectivityResult == ConnectivityResult.wifi) {
-      // I am connected to a wifi network.
-      var data = {
-        'name': await Connectivity().getWifiName(),
-        'ip': await Connectivity().getWifiIP(),
-        'bssid': await Connectivity().getWifiBSSID(),
-      };
-      log('data', error: data);
-      return data;
-    }
-    throw ('unexpected error');
-  }
-
-  PermissionHandler _permissionHandler = PermissionHandler();
-
-  Future requestsPermissions() async {
-    final result = await _permissionHandler.requestPermissions([
-      PermissionGroup.location,
-      PermissionGroup.locationAlways,
-      PermissionGroup.locationWhenInUse,
-    ]);
-    if (result[PermissionGroup.location] != PermissionStatus.granted &&
-        result[PermissionGroup.locationAlways] != PermissionStatus.granted &&
-        result[PermissionGroup.locationWhenInUse] != PermissionStatus.granted) {
-      throw ('You must accept location permissions');
-    }
-  }
-
-  void startESPTouchConfig(Map<String, dynamic> data) async {
-    progressBar = Dialogs.showProgressDialog('Configuring...', context);
-    progressBar.show();
-    log('data', error: data);
-    log('pass', error: passwordController.text);
-
-    Smartconfig.start(data['name'], data['bssid'], passwordController.text)
-        .then((onValue) {
-      progressBar.dismiss();
-
-      if (onValue == null) {
-        Dialogs.showSimpleDialog("Error", "Error configuring sensor", context);
-      } else {
-        log("devices", error: onValue);
-        log("IP: ", error: onValue.values.toList()[0]);
-        log("Mac: ", error: onValue.keys.toList()[0]);
-        WebRequestsHelpers.get(
-                domain: 'http://${onValue.values.toList()[0]}',
-                route: '/api/getConfig/')
-            .then((response) {
-          final Map<String, dynamic> res = jsonDecode(response.content());
-          AddDeviceDataManager().deviceData = {
-            'ip': onValue.values.toList()[0],
-            'sensorName': res['sensorName'],
-            'freqMinutes': res['freqMinutes'],
-            'sensorType': res['sensorType'],
-            'macAddress': res['macAddress'],
-            'ssid': data['name'],
-            'password': passwordController.text
-          };
-          widget.event();
-          log("response", error: response);
-        });
-        log("sm version", error: onValue);
+  void onResult(dynamic data, ResultState resultState) {
+    if (data is NetworkConfigModel) {
+      _networkSSIDController.text = data.networkSSID;
+      state.networkConfig = data;
+    } else if (data is String) {
+      switch (resultState) {
+        case ResultState.successful:
+          if (Navigator.canPop(_keyLoader.currentContext)) {
+            Navigator.pop(_keyLoader.currentContext);
+          }
+          event();
+          break;
+        case ResultState.error:
+            if (Navigator.canPop(_keyLoader.currentContext)) {
+              Navigator.pop(_keyLoader.currentContext);
+            }
+          Dialogs.showSimpleDialog('Error', data, _keyLoader.currentContext);
+          break;
+        case ResultState.loading:
+          Dialogs.showProgressDialog(data, _keyLoader.currentContext);
+          break;
       }
-    });
+    }
   }
 
-  StreamSubscription subscription;
-
-  @override
-  void dispose() {
-    super.dispose();
-    passwordController.dispose();
-    subscription.cancel();
+  void startConfiguration() {
+    FocusScope.of(_keyLoader.currentContext).unfocus();
+    if (_formKey.currentState.validate()) {
+      state.startESPTouchConfiguration(
+          networkConfigModel: NetworkConfigModel(
+              networkSSID: state.networkConfig.networkSSID,
+              networkBSSID: state.networkConfig.networkBSSID,
+              networkPassword: passwordController.text,
+              onResult: onResult));
+    } else {
+      state.networkConfigAutoValidate = true;
+    }
   }
-
-  AnimationController _controller;
-  Animation _animation;
-  TextEditingController passwordController = new TextEditingController();
-  TextEditingController ssidController = new TextEditingController();
-  bool isPasswordVisible = true;
 
   @override
   Widget build(BuildContext context) {
-    _controller.forward();
-    return FadeTransition(
-      opacity: _animation,
-      child: FutureBuilder(
-        future: Future.wait([requestsPermissions(), getNetworkInfo()])
-            .then((value) => value[1]),
-        builder: (BuildContext context, AsyncSnapshot value) {
-          if (value.connectionState == ConnectionState.waiting ||
-              value.connectionState == ConnectionState.none) {
-            return Center(child: CircularProgressIndicator());
-          } else {
-            if (value.hasData) {
-              ssidController.text = value.data['name'].toString();
-              return Container(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    CustomTextField(
-                      inputType: TextInputType.text,
-                      enabled: false,
-                      icon: const Icon(MdiIcons.routerWireless),
-                      controller: ssidController,
-                      placeholder: "SSID",
-                    ),
-                    CustomTextField(
-                      inputType: TextInputType.text,
-                      icon: const Icon(MdiIcons.lockOutline),
-                      controller: passwordController,
-                      onChanged: (value) {},
-                      suffix: IconButton(
-                        onPressed: () {
-                          setState(() {
-                            isPasswordVisible = !isPasswordVisible;
-                          });
-                        },
-                        icon: Icon(isPasswordVisible
-                            ? MdiIcons.eyeOffOutline
-                            : MdiIcons.eyeOutline),
-                      ),
-                      placeholder: "Password",
-                    ),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    RoundMaterialButton(
-                        onPressed: () {
-                          startESPTouchConfig(value.data);
-                        },
-                        icon: const Icon(MdiIcons.check),
-                        label: "Start Config"),
-                  ],
-                ),
-              );
-            } else {
-              return Container(
-                padding: const EdgeInsets.all(16),
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: <Widget>[
-                      const Icon(
-                        MdiIcons.wifiOff,
-                        size: 80,
-                      ),
-                      Text(
-                        value.error.toString(),
-                        style: const TextStyle(
-                          fontSize: 20,
+    _networkState.getNetworkInfo(onResult: onResult);
+    state.networkConfigAutoValidate = false;
+    return StreamBuilder<ConnectivityResult>(
+      key: _keyLoader,
+      stream: _networkState.connectionTypeStream$,
+      builder:
+          (BuildContext context, AsyncSnapshot<ConnectivityResult> snapshot) {
+        return Center(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: AnimatedSwitcher(
+              duration: const Duration(milliseconds: 500),
+              child: _networkState.connectionType != ConnectivityResult.wifi
+                  ? Container(
+                      padding: const EdgeInsets.all(16),
+                      child: Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          children: <Widget>[
+
+                              Container(
+                                width: Utils.getPercentValueFromScreenWidth(70, context),
+                                height: Utils.getPercentValueFromScreenHeight(30, context),
+                                child: FlareActor.asset(
+                                  AssetFlare(bundle: rootBundle, name: 'assets/flare/no_wifi.flr'),
+                                  alignment: Alignment.center,
+                                  fit: BoxFit.contain,
+                                  animation: 'init',
+                                ),
+                              ),
+                            
+                            const Text(
+                              'You have to be connected to a 2G WiFi network',
+                              style: TextStyle(
+                                fontSize: 20,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
+                          ],
                         ),
-                        textAlign: TextAlign.center,
                       ),
-                      if (value.error.toString() ==
-                          'You must accept location permissions')
-                        RoundMaterialButton(
-                            onPressed: () => setState(() {}), label: 'Retry')
-                    ],
-                  ),
-                ),
-              );
-            }
-          }
-        },
-      ),
+                    )
+                  : StreamBuilder<bool>(
+                      stream: state.networkFormStream$,
+                      builder:
+                          (BuildContext context, AsyncSnapshot<bool> snapshot) {
+                        return Form(
+                          autovalidate: state.networkConfigAutoValidate,
+                          key: _formKey,
+                          child: Container(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                const Icon(
+                                  MdiIcons.wifi,
+                                  size: 80,
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                const Text(
+                                  'Make sure you are connected to a 2G WiFi network',
+                                  textAlign: TextAlign.center,
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                CustomTextField(
+                                  inputType: TextInputType.text,
+                                  enabled: false,
+                                  icon: const Icon(MdiIcons.routerWireless),
+                                  controller: _networkSSIDController,
+                                  placeholder: 'SSID',
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                StreamBuilder<bool>(
+                                  stream: state.networkConfigPasswordStream$,
+                                  builder: (BuildContext context,
+                                      AsyncSnapshot<bool> snapshot) {
+                                    return CustomTextField(
+                                      inputType: TextInputType.text,
+                                      isPassword: state.networkConfigPassword,
+                                      icon: const Icon(MdiIcons.lockOutline),
+                                      validator: FormValidation.simpleValidator,
+                                      controller: passwordController,
+                                      onSubmitted: startConfiguration,
+                                      suffix: IconButton(
+                                        onPressed:
+                                            state.toggleNetworkConfigAPassword,
+                                        icon: Icon(
+                                          state.networkConfigPassword
+                                              ? MdiIcons.eyeOffOutline
+                                              : MdiIcons.eyeOutline,
+                                        ),
+                                      ),
+                                      placeholder: 'Password',
+                                    );
+                                  },
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                RoundRectangleButton(
+                                  onPressed: startConfiguration,
+                                  icon: const Icon(MdiIcons.check),
+                                  label: 'Start Config',
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

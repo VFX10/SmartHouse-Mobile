@@ -1,106 +1,269 @@
-import 'dart:developer';
+import 'dart:ui';
 
+import 'package:Homey/design/colors.dart';
 import 'package:Homey/design/rooms_styles.dart';
 import 'package:Homey/design/widgets/buttons/round_button.dart';
 import 'package:Homey/helpers/sql_helper/data_models/room_model.dart';
+import 'package:Homey/helpers/sql_helper/data_models/sensor_model.dart';
+import 'package:Homey/helpers/utils.dart';
+import 'package:flutter/widgets.dart';
+import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-
 class RoomListItem extends StatelessWidget {
-  RoomListItem(this.room, {this.onPressed});
+  const RoomListItem(this.room, this.index, {this.onPressed});
 
   final RoomModel room;
   final Function onPressed;
+  final int index;
 
   @override
   Widget build(BuildContext context) {
-    var style = RoomsStyles(room.name).getRoomStyle();
-    log(room.sensors.toString());
-    return GestureDetector(
-      onTap: onPressed,
+    final Map<String, dynamic> style = RoomsStyles(room.name).getRoomStyle();
+    return SlideAnimation(
+      horizontalOffset: Utils.getPercentValueFromScreenHeight(100, context),
       child: Container(
-        child: Container(
-          child: AspectRatio(
-            aspectRatio: 21 / 9,
-            child: Card(
-              elevation: 10,
-              color: style['primary'],
-              child: Container(
-                padding: const EdgeInsets.only(
-                    left: 16, top: 16, right: 16, bottom: 10),
+        child: AspectRatio(
+          aspectRatio: 21 / 9,
+          child: Card(
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+            elevation: 10,
+            color: style['primary'],
+            child: InkWell(
+                onTap: onPressed,
+                splashColor: style['iconColor'],
                 child: Stack(
+                  overflow: Overflow.clip,
+                  fit: StackFit.passthrough,
                   children: <Widget>[
-                    Align(
-                      alignment: Alignment.topLeft,
-                      child: Text(
-                        room.name,
-                        style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            color: style['textColor']),
-                      ),
-                    ),
-                    Align(
-                      alignment: Alignment.topRight,
-                      child: Icon(
-                        style['icon'],
-                        size: 60,
-                        color: style['iconColor'],
-                      ),
-                    ),
-                    if (room.sensors != null && room.sensors.length > 0)
-                      Align(
-                        alignment: Alignment.bottomLeft,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: <Widget>[
-                            if(room.sensors.where((sensor) => sensor.sensorType == 3).length > 0)
-                            RoundButton(
-                              onPressed: () {},
-                              icon: Icon(
-                                MdiIcons.lightbulb,
-                                color: style['primary'],
-                                size: 20.0,
-                              ),
-                            ),
-                            if(room.sensors.where((sensor) => sensor.sensorType == 3).length > 0)
-                              const SizedBox(
-                              width: 10,
-                            ),
-                            if(room.sensors.where((sensor) => sensor.sensorType == 1).length > 0)
-                            RoundButton(
-                              onPressed: () {},
-                              icon: Icon(
-                                MdiIcons.lightSwitch,
-                                color: style['primary'],
-                                size: 20.0,
-                              ),
-                            ),
-                            if(room.sensors.where((sensor) => sensor.sensorType == 1).length > 0)
-                              const SizedBox(
-                              width: 10,
-                            ),
-                            if(room.sensors.where((sensor) => sensor.sensorType == 2).length > 0)
-                            RoundButton(
-                              onPressed: () {},
-                              icon: Icon(
-                                MdiIcons.powerSocketEu,
-                                color: style['primary'],
-                                size: 20.0,
-                              ),
-                            ),
-                          ],
+
+                    Positioned.fill(
+                      child: ColorFiltered(
+                        colorFilter: ColorFilter.mode(
+                            ColorsTheme.background.withOpacity(0.6),
+                            BlendMode.multiply),
+                        child: Image.asset(
+                          style['image'],
+                          fit: BoxFit.cover,
                         ),
-                      )
+                      ),
+                    ),
+                    Positioned.fill(
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 2, sigmaY: 2),
+                        child: Container(
+                          color: Colors.transparent
+                        ),
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.only(
+                          left: 16, top: 16, right: 16, bottom: 10),
+                      child: Stack(
+                        children: <Widget>[
+                          Align(
+                            alignment: Alignment.topLeft,
+                            child: Text(
+                              room.name,
+                              style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white.withOpacity(0.7)),
+                            ),
+                          ),
+                          Align(
+                            alignment: Alignment.topRight,
+                            child: Icon(
+                              style['icon'],
+                              size: 60,
+                              color: Colors.white.withOpacity(0.6),
+                            ),
+                          ),
+                          if (room.sensors.isNotEmpty)
+                            Align(
+                              alignment: Alignment.bottomLeft,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  if (room.sensors
+                                      .where((SensorModel sensor) =>
+                                          sensor.sensorType == 3)
+                                      .isNotEmpty)
+                                    RoundButton(
+                                      onPressed: () {},
+                                      backgroundColor:
+                                      ColorsTheme.backgroundDarker.withOpacity(0.8),
+                                      icon: Icon(
+                                        MdiIcons.lightbulb,
+                                        color: Colors.white,
+                                        size: 20.0,
+                                      ),
+                                    ),
+                                  if (room.sensors
+                                      .where((SensorModel sensor) =>
+                                          sensor.sensorType == 3)
+                                      .isNotEmpty)
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                  if (room.sensors
+                                      .where((SensorModel sensor) =>
+                                          sensor.sensorType == 1)
+                                      .isNotEmpty)
+                                    RoundButton(
+                                      onPressed: () {},
+                                      backgroundColor:
+                                      ColorsTheme.backgroundDarker.withOpacity(0.8),
+                                      icon: Icon(
+                                        MdiIcons.lightSwitch,
+                                        color: Colors.white,
+                                        size: 20.0,
+                                      ),
+                                    ),
+                                  if (room.sensors
+                                      .where((SensorModel sensor) =>
+                                          sensor.sensorType == 1)
+                                      .isNotEmpty)
+                                    const SizedBox(
+                                      width: 10,
+                                    ),
+                                  if (room.sensors
+                                      .where((SensorModel sensor) =>
+                                          sensor.sensorType == 2)
+                                      .isNotEmpty)
+                                    RoundButton(
+                                      onPressed: () {},
+                                      backgroundColor:
+                                          ColorsTheme.backgroundDarker.withOpacity(0.8),
+                                      icon: Icon(
+                                        MdiIcons.powerSocketEu,
+                                        color: Colors.white,
+                                        size: 20.0,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            )
+                        ],
+                      ),
+                    ),
                   ],
-                ),
-              ),
-            ),
+                )),
           ),
         ),
       ),
     );
+//    return TweenAnimationBuilder<double>(
+//      duration: Duration(seconds: 1, milliseconds: 100 * index),
+//      curve: Curves.easeInOut,
+//      tween: Tween<double>(begin: Utils.getPercentValueFromScreenHeight(100, context), end: 0),
+//      builder: (_, double position, __) {
+//        return Transform.translate(
+//          offset: Offset(position, 0),
+//          child:
+//          GestureDetector(
+//            onTap: onPressed,
+//            child: Container(
+//              child: Container(
+//                child: AspectRatio(
+//                  aspectRatio: 21 / 9,
+//                  child: Card(
+//                    elevation: 10,
+//                    color: style['primary'],
+//                    child: Container(
+//                      padding: const EdgeInsets.only(
+//                          left: 16, top: 16, right: 16, bottom: 10),
+//                      child: Stack(
+//                        children: <Widget>[
+//                          Align(
+//                            alignment: Alignment.topLeft,
+//                            child: Text(
+//                              room.name,
+//                              style: TextStyle(
+//                                  fontSize: 20,
+//                                  fontWeight: FontWeight.bold,
+//                                  color: style['textColor']),
+//                            ),
+//                          ),
+//                          Align(
+//                            alignment: Alignment.topRight,
+//                            child: Icon(
+//                              style['icon'],
+//                              size: 60,
+//                              color: style['iconColor'],
+//                            ),
+//                          ),
+//                          if (room.sensors.isNotEmpty)
+//                            Align(
+//                              alignment: Alignment.bottomLeft,
+//                              child: Row(
+//                                mainAxisAlignment: MainAxisAlignment.start,
+//                                children: <Widget>[
+//                                  if (room.sensors
+//                                      .where((SensorModel sensor) =>
+//                                          sensor.sensorType == 3)
+//                                      .isNotEmpty)
+//                                    RoundButton(
+//                                      onPressed: () {},
+//                                      icon: Icon(
+//                                        MdiIcons.lightbulb,
+//                                        color: style['primary'],
+//                                        size: 20.0,
+//                                      ),
+//                                    ),
+//                                  if (room.sensors
+//                                      .where((SensorModel sensor) =>
+//                                          sensor.sensorType == 3)
+//                                      .isNotEmpty)
+//                                    const SizedBox(
+//                                      width: 10,
+//                                    ),
+//                                  if (room.sensors
+//                                      .where((SensorModel sensor) =>
+//                                          sensor.sensorType == 1)
+//                                      .isNotEmpty)
+//                                    RoundButton(
+//                                      onPressed: () {},
+//                                      icon: Icon(
+//                                        MdiIcons.lightSwitch,
+//                                        color: style['primary'],
+//                                        size: 20.0,
+//                                      ),
+//                                    ),
+//                                  if (room.sensors
+//                                      .where((SensorModel sensor) =>
+//                                          sensor.sensorType == 1)
+//                                      .isNotEmpty)
+//                                    const SizedBox(
+//                                      width: 10,
+//                                    ),
+//                                  if (room.sensors
+//                                      .where((SensorModel sensor) =>
+//                                          sensor.sensorType == 2)
+//                                      .isNotEmpty)
+//                                    RoundButton(
+//                                      onPressed: () {},
+//                                      icon: Icon(
+//                                        MdiIcons.powerSocketEu,
+//                                        color: style['primary'],
+//                                        size: 20.0,
+//                                      ),
+//                                    ),
+//                                ],
+//                              ),
+//                            )
+//                        ],
+//                      ),
+//                    ),
+//                  ),
+//                ),
+//              ),
+//            ),
+//          ),
+//        );
+//      },
+//    );
   }
 }

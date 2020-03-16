@@ -1,7 +1,5 @@
-import 'dart:developer';
-
-import 'package:Homey/data/add_device_state.dart';
-import 'package:Homey/data/models/add_device_model.dart';
+import 'package:Homey/data/devices_states/add_device_state.dart';
+import 'package:Homey/data/models/devices_models/add_device_model.dart';
 import 'package:Homey/data/on_result_callback.dart';
 import 'package:Homey/design/colors.dart';
 import 'package:Homey/design/dialogs.dart';
@@ -11,13 +9,9 @@ import 'package:Homey/helpers/forms_helpers/form_validations.dart';
 import 'package:Homey/helpers/forms_helpers/forms_helpers.dart';
 import 'package:Homey/helpers/sql_helper/data_models/sensor_model.dart';
 import 'package:Homey/helpers/utils.dart';
-import 'package:Homey/helpers/web_requests_helpers/web_requests_helpers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:progress_dialog/progress_dialog.dart';
-
-import '../add_device_data_manager.dart';
 
 class DeviceConfig extends StatelessWidget {
   DeviceConfig({@required this.state, this.event}) : super();
@@ -34,28 +28,7 @@ class DeviceConfig extends StatelessWidget {
       readingFrequencyFocus = FocusNode();
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-//  Map<dynamic, dynamic> _formData;
-
-//  @override
-//  void setState(fn) {
-//    // check if state is mounted before calling setState() method
-//    if (mounted) {
-//      super.setState(fn);
-//    }
-//  }
-//
-//  @override
-//  void dispose() {
-//    // Clean up the controller when the widget is disposed.
-//    super.dispose();
-//
-//    portController.dispose();
-//    serverController.dispose();
-//    sensorNameController.dispose();
-//    readingFrequencyController.dispose();
-//
-//  }
+  final GlobalKey<State> _keyLoader = GlobalKey<State>();
 
   @override
   Widget build(BuildContext context) {
@@ -64,6 +37,7 @@ class DeviceConfig extends StatelessWidget {
         state.deviceConfig.sensor.readingFrequency.toString();
     state.deviceConfigAutoValidate = false;
     return Center(
+      key: _keyLoader,
       child: SingleChildScrollView(
         child: StreamBuilder<bool>(
             stream: state.deviceFormStream$,
@@ -97,7 +71,7 @@ class DeviceConfig extends StatelessWidget {
                         style: const TextStyle(fontSize: 30),
                       ),
                       CustomTextField(
-                        inputType: TextInputType.url,
+                        inputType: TextInputType.text,
                         icon: Icon(MdiIcons.text),
                         controller: sensorNameController,
                         focusNode: sensorNameFocus,
@@ -191,8 +165,7 @@ class DeviceConfig extends StatelessWidget {
         if (Navigator.canPop(_keyLoader.currentContext)) {
           Navigator.pop(_keyLoader.currentContext);
         }
-        Navigator.pushReplacement<Menu, dynamic>(_keyLoader.currentContext,
-            MaterialPageRoute<Menu>(builder: (_) => Menu()));
+        event();
         break;
       case ResultState.loading:
         Dialogs.showProgressDialog(data, _keyLoader.currentContext);
@@ -201,6 +174,8 @@ class DeviceConfig extends StatelessWidget {
   }
 
   void saveConfig() {
+    FocusScope.of(_keyLoader.currentContext).unfocus();
+
     if (_formKey.currentState.validate()) {
       _formKey.currentState.save();
       state.saveDeviceConfiguration(
@@ -216,47 +191,6 @@ class DeviceConfig extends StatelessWidget {
     } else {
       state.deviceConfigAutoValidate = true;
     }
-//    if (_formKey.currentState.validate()) {
-//      _formKey.currentState.save();
-//      log('submit', error: _formData);
-//
-//      _formData = <String, dynamic>{
-//        'port': portController.text,
-//        'server': serverController.text,
-//        'sensorName': sensorNameController.text,
-//        'freqMinutes': readingFrequencyController.text,
-//        'roomId': AddDeviceDataManager().deviceData['roomId'],
-//        'ssid': deviceData['ssid'],
-//        'password': deviceData['password']
-//      };
-//
-//      await WebRequestsHelpers.post(
-//              domain: 'http://${deviceData['ip']}',
-//              route: '/api/config',
-//              body: _formData)
-//          .then((dynamic response) async {
-//        if (response != null) {
-//          if (response.json()['message'] != null) {
-////            Dialogs.showSimpleDialog(
-////                "Success", response.json()['message'], context);
-//            AddDeviceDataManager().deviceData['sensorName'] =
-//                sensorNameController.text;
-//            AddDeviceDataManager().deviceData['freqMinutes'] =
-//                readingFrequencyController.text;
-//            log('data', error: AddDeviceDataManager().deviceData);
-//
-//            widget.event();
-//          } else {
-//            Dialogs.showSimpleDialog(
-//                'Error', response.json()['error'], context);
-//          }
-//        }
-//      });
-//    } else {
-//      setState(() {
-//        formAutoValidate = true;
-//      });
-//    }
   }
 
 
