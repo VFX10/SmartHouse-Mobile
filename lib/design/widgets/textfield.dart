@@ -2,49 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class CustomTextField extends StatelessWidget {
-  final String placeholder;
-  final TextEditingController controller;
-  final bool isPassword;
-  final Icon icon;
-  final TextInputAction inputAction;
-  final TextInputType inputType;
-  final Widget suffix;
-  final Function() onSubmitted;
-  final Function(dynamic) onChanged;
-  final dynamic Function(String) validator;
-  final FocusNode focusNode;
-  final bool autoValidate, enabled;
-
-  Widget generateTextField() {
-    return Padding(
-      padding: const EdgeInsets.only(top: 10.0),
-      child: TextFormField(
-          cursorRadius: Radius.circular(16.0),
-          onChanged: this.onChanged,
-          enabled: this.enabled,
-          controller: this.controller,
-          obscureText: isPassword,
-          textInputAction: this.inputAction,
-          focusNode: this.focusNode,
-          validator: this.validator,
-          autovalidate: this.autoValidate,
-          onEditingComplete: this.onSubmitted,
-          //onSubmitted: this.onSubmitted,
-          keyboardType: this.inputType,
-          decoration: InputDecoration(
-            border: OutlineInputBorder(
-              borderSide: BorderSide(width: 3.0),),
-            contentPadding: EdgeInsets.symmetric(horizontal: 13),
-            prefixIcon: this.icon,
-            suffixIcon: this.suffix,
-            labelText: this.placeholder,
-            alignLabelWithHint: true,
-          ),
-          ),
-    );
-  }
-
-  CustomTextField(
+  const CustomTextField(
       {this.placeholder = '',
       this.controller,
       this.isPassword = false,
@@ -57,8 +15,54 @@ class CustomTextField extends StatelessWidget {
       this.icon,
       this.suffix,
       this.validator,
+        this.textLength,
       this.autoValidate = false})
       : super();
+
+  final String placeholder;
+  final TextEditingController controller;
+  final bool isPassword;
+  final Icon icon;
+  final TextInputAction inputAction;
+  final TextInputType inputType;
+  final Widget suffix;
+  final Function() onSubmitted;
+  final Function(String) onChanged;
+  final dynamic Function(String) validator;
+  final FocusNode focusNode;
+  final bool autoValidate, enabled;
+  final int textLength;
+
+  Widget generateTextField() {
+    return Padding(
+      padding: const EdgeInsets.only(top: 10.0),
+      child: TextFormField(
+        cursorRadius: const Radius.circular(16.0),
+        onChanged: onChanged,
+        enabled: enabled,
+        controller: controller,
+        obscureText: isPassword,
+        textInputAction: inputAction,
+        focusNode: focusNode,
+        validator: validator,
+        autovalidate: autoValidate,
+        onEditingComplete: onSubmitted,
+        maxLength: textLength,
+        //onSubmitted: onSubmitted,
+        keyboardType: inputType,
+        decoration: InputDecoration(
+          border: const OutlineInputBorder(
+            borderSide: BorderSide(width: 3.0),
+          ),
+          contentPadding: const EdgeInsets.symmetric(horizontal: 13),
+          prefixIcon: icon,
+          suffixIcon: suffix,
+          labelText: placeholder,
+          alignLabelWithHint: true,
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
