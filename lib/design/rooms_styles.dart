@@ -17,7 +17,6 @@ class RoomsStyles {
       'iconColor': const Color(0xFF554881),
       'textColor': const Color(0xFFFDF0FF),
       'image': 'assets/images/kitchen.jpg'
-
     },
     'Living room': <String, dynamic>{
       'primary': const Color(0xFF068F82),
@@ -32,7 +31,6 @@ class RoomsStyles {
       'iconColor': const Color(0xFF117A72),
       'textColor': const Color(0xFFDDFFFF),
       'image': 'assets/images/bathroom.jpg'
-
     },
     'Hallway': <String, dynamic>{
       'primary': const Color(0xFF1F7FA9),
@@ -40,7 +38,6 @@ class RoomsStyles {
       'iconColor': const Color(0xFF155E7E),
       'textColor': const Color(0xFFC5FFFF),
       'image': 'assets/images/hall.jpg'
-
     },
     'Guest room': <String, dynamic>{
       'primary': const Color(0xFF5387BE),
@@ -48,7 +45,6 @@ class RoomsStyles {
       'iconColor': const Color(0xFF29435F),
       'textColor': const Color(0xFFFBFFFF),
       'image': 'assets/images/guestsroom.jpg'
-
     },
     'Bedroom': <String, dynamic>{
       'primary': const Color(0xFFEFB342),
@@ -56,7 +52,6 @@ class RoomsStyles {
       'iconColor': const Color(0xFF775921),
       'textColor': const Color(0xFFFFFFEA),
       'image': 'assets/images/bedroom.jpg'
-
     },
     'Office': <String, dynamic>{
       'primary': const Color(0xFF2E7DCC),
@@ -64,7 +59,6 @@ class RoomsStyles {
       'iconColor': const Color(0xFF173E66),
       'textColor': const Color(0xFFD6FFFF),
       'image': 'assets/images/office.jpg'
-
     },
     'default': <String, dynamic>{
       'primary': ColorsTheme.backgroundCard,
@@ -72,13 +66,14 @@ class RoomsStyles {
       'iconColor': ColorsTheme.background,
       'textColor': Colors.white,
       'image': 'assets/images/custom_room.jpg'
-
-    }
+    },
   };
 
   Map<String, dynamic> getRoomStyle() {
+    if(name == '') return roomStyle['default'];
     for (final String key in roomStyle.keys.toList()) {
-      if (name.toLowerCase().contains(key.toLowerCase())) {
+      if (key.toLowerCase().startsWith(name.toLowerCase()) ||
+          name.toLowerCase().contains(key.toLowerCase())) {
         return roomStyle[key];
       }
     }

@@ -15,6 +15,7 @@ class CustomTextField extends StatelessWidget {
       this.icon,
       this.suffix,
       this.validator,
+        this.textLength,
       this.autoValidate = false})
       : super();
 
@@ -30,6 +31,7 @@ class CustomTextField extends StatelessWidget {
   final dynamic Function(String) validator;
   final FocusNode focusNode;
   final bool autoValidate, enabled;
+  final int textLength;
 
   Widget generateTextField() {
     return Padding(
@@ -45,6 +47,7 @@ class CustomTextField extends StatelessWidget {
         validator: validator,
         autovalidate: autoValidate,
         onEditingComplete: onSubmitted,
+        maxLength: textLength,
         //onSubmitted: onSubmitted,
         keyboardType: inputType,
         decoration: InputDecoration(

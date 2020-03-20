@@ -29,8 +29,8 @@ class RoomListItem extends StatelessWidget {
           aspectRatio: 21 / 9,
           child: Card(
             clipBehavior: Clip.antiAliasWithSaveLayer,
-            elevation: 10,
-            color: style['primary'],
+            elevation: 5,
+//            color: style['primary'],
             child: InkWell(
                 onTap: onPressed,
                 splashColor: style['iconColor'],

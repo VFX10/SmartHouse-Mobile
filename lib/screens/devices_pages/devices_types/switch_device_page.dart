@@ -85,18 +85,24 @@ class _SwitchDevicePageState extends State<SwitchDevicePage> {
                         child: Image.asset(
                           'assets/images/light.jpg',
                           fit: BoxFit.cover,
-                          color: ColorsTheme.background.withOpacity(0.2),
+                          color:  Colors.black.withOpacity(0.2),
                           colorBlendMode: BlendMode.screen,
                         ),
                       ),
                       secondChild: Container(
                         height:
                             Utils.getPercentValueFromScreenHeight(100, context),
-                        child: Image.asset(
-                          'assets/images/light.jpg',
-                          fit: BoxFit.cover,
-                          color: ColorsTheme.background.withOpacity(0.9),
-                          colorBlendMode: BlendMode.multiply,
+                        child: ColorFiltered(
+                          colorFilter: ColorFilter.mode(
+                            Colors.grey,
+                            BlendMode.saturation,
+                          ),
+                          child: Image.asset(
+                            'assets/images/light.jpg',
+                            fit: BoxFit.cover,
+                            color: Colors.black.withOpacity(0.8),
+                            colorBlendMode: BlendMode.multiply,
+                          ),
                         ),
                       ),
                       crossFadeState: _state.device.data == null ||
@@ -105,7 +111,7 @@ class _SwitchDevicePageState extends State<SwitchDevicePage> {
                           : CrossFadeState.showSecond,
                     ),
                   );
-//                  return Container();
+
                 }),
             SafeArea(
               child: Align(
@@ -189,8 +195,6 @@ class _SwitchDevicePageState extends State<SwitchDevicePage> {
                         builder: (BuildContext context,
                             AsyncSnapshot<DeviceSwitchModel> snapshot) {
                           return Stack(
-//                            crossAxisAlignment: CrossAxisAlignment.center,
-//                            mainAxisAlignment: MainAxisAlignment.end,
                             children: <Widget>[
                               Align(
                                 alignment: const Alignment(0, 0.9),

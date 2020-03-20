@@ -10,6 +10,7 @@ import 'package:Homey/data/menu_state.dart';
 import 'package:Homey/data/login_state.dart';
 import 'package:Homey/data/devices_states/network_status_state.dart';
 import 'package:Homey/data/register_state.dart';
+import 'package:Homey/data/room_edit_state.dart';
 import 'package:flutter/material.dart';
 import 'package:Homey/design/colors.dart';
 import 'package:Homey/screens/login/login.dart';
@@ -43,6 +44,8 @@ void main() {
   getIt.registerSingleton<DeviceSwitchState>(DeviceSwitchState(), signalsReady: true);
   // ignore: cascade_invocations
   getIt.registerSingleton<DeviceTempState>(DeviceTempState(), signalsReady: true);
+  // ignore: cascade_invocations
+  getIt.registerSingleton<RoomEditState>(RoomEditState(), signalsReady: true);
 
 
   FlareCache.doesPrune = false;

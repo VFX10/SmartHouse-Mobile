@@ -1,6 +1,5 @@
 import 'dart:developer';
 
-import 'package:Homey/data/models/devices_models/device_switch_model.dart';
 import 'package:Homey/data/on_result_callback.dart';
 import 'package:Homey/design/colors.dart';
 import 'package:Homey/design/dialogs.dart';
@@ -163,15 +162,11 @@ class _DeviceInfoState extends State<DeviceInfo> {
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.red,
-//        label: const Text(
-//          'Delete',
-//          style: TextStyle(color: Colors.white),
-//        ),
+        onPressed: () {},
         child: const Icon(
           MdiIcons.trashCanOutline,
           color: Colors.white,
         ),
-        onPressed: () {},
       ),
     );
   }
@@ -182,10 +177,8 @@ class _DeviceInfoState extends State<DeviceInfo> {
         Dialogs.showSimpleDialog('Success', data, context);
         break;
       case ResultState.error:
-        // TODO: Handle this case.
         break;
       case ResultState.loading:
-        // TODO: Handle this case.
         break;
     }
   }
