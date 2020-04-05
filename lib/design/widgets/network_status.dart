@@ -1,4 +1,3 @@
-import 'dart:developer';
 
 import 'package:flutter/material.dart';
 
@@ -9,7 +8,6 @@ class NetworkStatusLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    log(online.toString());
     return Container(
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,

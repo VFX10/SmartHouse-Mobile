@@ -1,4 +1,4 @@
-import 'package:Homey/helpers/utils.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:Homey/design/colors.dart';
 
@@ -20,35 +20,39 @@ class DeviceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     if (isCategory) {
       return Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 2.5),
-        child: Column(
-          children: <Widget>[
-            Expanded(
-              flex: 3,
-              child: AspectRatio(
-                aspectRatio: 1 / 1,
-                child: Card(
-                  elevation: 10,
-                  color: ColorsTheme.backgroundCard,
-                  child: InkWell(
-                    onTap: onPressed,
-                    splashColor: ColorsTheme.backgroundDarker,
-                    child: Center(
+        padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 2.5),
+        child: AspectRatio(
+          aspectRatio: 1 / 1,
+          child: Card(
+            elevation: 10,
+            color: ColorsTheme.backgroundCard,
+            child: InkWell(
+              onTap: onPressed,
+              splashColor: ColorsTheme.backgroundDarker,
+              child: Stack(
+                children: <Widget>[
+                  Align(
+                    alignment: Alignment.center,
+                    child: Transform.scale(
+                      scale: 1.1,
                       child: Icon(icon),
                     ),
                   ),
-                ),
+                  Align(
+                    alignment: const Alignment(0, 1.7),
+                    child: Text(
+                      label,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(
+                        color: Color(0xFFA5AEBB),
+                      ),
+                    ),
+                  )
+                ],
               ),
             ),
-            Expanded(
-                flex: 1,
-                child: Text(
-                  label,
-                  style: const TextStyle(
-                    color: Color(0xFFA5AEBB),
-                  ),
-                )),
-          ],
+          ),
         ),
       );
     }
@@ -70,9 +74,12 @@ class DeviceCard extends StatelessWidget {
                   children: <Widget>[
                     Align(
                       alignment: Alignment.center,
-                      child: Icon(
-                        icon,
-                        color: ColorsTheme.backgroundDarker,
+                      child: Transform.scale(
+                        scale: 1.1,
+                        child: Icon(
+                          icon,
+                          color: ColorsTheme.backgroundDarker,
+                        ),
                       ),
                     ),
                     Align(
@@ -95,7 +102,6 @@ class DeviceCard extends StatelessWidget {
                           maxLines: 1,
                           textAlign: TextAlign.center,
                           style: const TextStyle(
-
                             color: ColorsTheme.backgroundDarker,
                           ),
                         ),

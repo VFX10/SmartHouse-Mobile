@@ -1,4 +1,3 @@
-import 'package:Homey/data/on_result_callback.dart';
 import 'package:Homey/helpers/sql_helper/data_models/sensor_model.dart';
 
 class RoomModel {

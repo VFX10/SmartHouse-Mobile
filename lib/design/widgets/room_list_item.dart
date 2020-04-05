@@ -13,11 +13,11 @@ import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 class RoomListItem extends StatelessWidget {
-  const RoomListItem(this.room, this.index, {this.onPressed});
+  const RoomListItem(this.room, {@required this.onPressed, this.selectionOnly = false});
 
   final RoomModel room;
   final Function onPressed;
-  final int index;
+  final bool selectionOnly;
 
   @override
   Widget build(BuildContext context) {
@@ -81,7 +81,7 @@ class RoomListItem extends StatelessWidget {
                               color: Colors.white.withOpacity(0.6),
                             ),
                           ),
-                          if (room.sensors.isNotEmpty)
+                          if (room.sensors.isNotEmpty && !selectionOnly)
                             Align(
                               alignment: Alignment.bottomLeft,
                               child: Row(

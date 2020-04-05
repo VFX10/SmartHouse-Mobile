@@ -1,13 +1,7 @@
-import 'dart:developer';
-
-import 'package:Homey/app_data_manager.dart';
-import 'package:Homey/data/add_room_state.dart';
-import 'package:Homey/data/menu_state.dart';
-import 'package:Homey/data/models/add_room_model.dart';
-import 'package:Homey/data/on_result_callback.dart';
 import 'package:Homey/design/dialogs.dart';
-import 'package:Homey/helpers/sql_helper/data_models/room_model.dart';
-import 'package:Homey/helpers/web_requests_helpers/web_requests_helpers.dart';
+import 'package:Homey/models/add_room_model.dart';
+import 'package:Homey/states/add_room_state.dart';
+import 'package:Homey/states/on_result_callback.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:Homey/design/colors.dart';
@@ -24,35 +18,6 @@ class RoomName extends StatelessWidget {
   final TextEditingController roomNameController = TextEditingController();
   final GlobalKey<State> _stateKey = GlobalKey<State>();
   final AddRoomState _state = getIt.get<AddRoomState>();
-
-//  Future<void> addRoom() async {
-//
-//    final Map<String, dynamic> formData = <String, dynamic>{
-//      'roomName': roomNameController.text,
-//      'houseId': getIt.get<MenuState>().selectedHome.dbId,
-//    };
-//    FocusScope.of(context).unfocus();
-//
-//    progressBar = Dialogs.showProgressDialog('Please wait...', context);
-//    await progressBar.show();
-//    await WebRequestsHelpers.post(route: '/api/add/room', body: formData).then(
-//        (dynamic response) async {
-//      progressBar.dismiss();
-//      final dynamic data = response.json();
-//      if (data['success'] != null) {
-//        final RoomModel room = RoomModel(
-//          dbId: data['data']['id'],
-//          houseId: AppDataManager().defaultHome.id,
-//          name: data['data']['name'],
-//        );
-//        await AppDataManager().addRoom(room);
-////        state.selectedRooms.add(room);
-//        Navigator.pop(context);
-//      } else {
-//        Dialogs.showSimpleDialog('Error', response.json()['error'], context);
-//      }
-//    }, onError: onError);
-//  }
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final List<String> roomNames = <String>[

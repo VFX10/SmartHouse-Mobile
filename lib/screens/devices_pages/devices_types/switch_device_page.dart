@@ -1,6 +1,4 @@
-import 'package:Homey/data/devices_states/devices_switch_state.dart';
-import 'package:Homey/data/models/devices_models/device_switch_model.dart';
-import 'package:Homey/data/on_result_callback.dart';
+
 import 'package:Homey/design/colors.dart';
 import 'package:Homey/design/dialogs.dart';
 import 'package:Homey/design/widgets/buttons/round_button.dart';
@@ -9,7 +7,10 @@ import 'package:Homey/helpers/mqtt.dart';
 import 'package:Homey/helpers/sql_helper/data_models/sensor_model.dart';
 import 'package:Homey/helpers/utils.dart';
 import 'package:Homey/main.dart';
+import 'package:Homey/models/devices_models/device_switch_model.dart';
 import 'package:Homey/screens/devices_pages/device_info.dart';
+import 'package:Homey/states/devices_states/devices_switch_state.dart';
+import 'package:Homey/states/on_result_callback.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:pull_to_refresh/pull_to_refresh.dart';

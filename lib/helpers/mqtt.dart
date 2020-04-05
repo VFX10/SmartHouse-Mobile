@@ -2,12 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:Homey/data/devices_states/devices_switch_state.dart';
-import 'package:Homey/data/devices_states/devices_temp_state.dart';
-import 'package:Homey/data/models/devices_models/device_switch_model.dart';
-import 'package:Homey/data/models/devices_models/device_temp_model.dart';
 import 'package:Homey/helpers/sql_helper/data_models/sensor_model.dart';
 import 'package:Homey/helpers/sql_helper/sql_helper.dart';
+import 'package:Homey/models/devices_models/device_switch_model.dart';
+import 'package:Homey/models/devices_models/device_temp_model.dart';
+import 'package:Homey/states/devices_states/devices_switch_state.dart';
+import 'package:Homey/states/devices_states/devices_temp_state.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 

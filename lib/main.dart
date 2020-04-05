@@ -1,20 +1,20 @@
 import 'dart:async';
 import 'dart:developer';
 
-import 'package:Homey/data/devices_states/add_device_state.dart';
-import 'package:Homey/data/add_house_state.dart';
-import 'package:Homey/data/add_room_state.dart';
-import 'package:Homey/data/devices_states/devices_switch_state.dart';
-import 'package:Homey/data/devices_states/devices_temp_state.dart';
-import 'package:Homey/data/menu_state.dart';
-import 'package:Homey/data/login_state.dart';
-import 'package:Homey/data/devices_states/network_status_state.dart';
-import 'package:Homey/data/register_state.dart';
-import 'package:Homey/data/room_edit_state.dart';
+import 'package:Homey/states/add_house_state.dart';
+import 'package:Homey/states/add_room_state.dart';
+import 'package:Homey/states/devices_states/add_device_state.dart';
+import 'package:Homey/states/devices_states/device_selector_state.dart';
+import 'package:Homey/states/devices_states/devices_switch_state.dart';
+import 'package:Homey/states/devices_states/devices_temp_state.dart';
+import 'package:Homey/states/devices_states/network_status_state.dart';
+import 'package:Homey/states/login_state.dart';
+import 'package:Homey/states/menu_state.dart';
+import 'package:Homey/states/register_state.dart';
 import 'package:flutter/material.dart';
 import 'package:Homey/design/colors.dart';
-import 'package:Homey/screens/login/login.dart';
-import 'package:Homey/screens/home/menu.dart';
+import 'package:Homey/screens/login.dart';
+import 'package:Homey/screens/menu/menu.dart';
 import 'package:flare_flutter/flare_cache.dart';
 import 'package:get_it/get_it.dart';
 
@@ -45,7 +45,8 @@ void main() {
   // ignore: cascade_invocations
   getIt.registerSingleton<DeviceTempState>(DeviceTempState(), signalsReady: true);
   // ignore: cascade_invocations
-  getIt.registerSingleton<RoomEditState>(RoomEditState(), signalsReady: true);
+  getIt.registerSingleton<DeviceSelectorState>(DeviceSelectorState(), signalsReady: true);
+
 
 
   FlareCache.doesPrune = false;
@@ -97,7 +98,6 @@ class MyApp extends StatelessWidget {
                         'assets/images/Logo.png',
                         height: 60,
                       ),
-//                        const SizedBox(height: 10,),
                       const Text(
                         'Homey',
                         style: TextStyle(

@@ -1,6 +1,5 @@
 import 'package:Homey/design/colors.dart';
 import 'package:flutter/material.dart';
-import 'package:Homey/helpers/utils.dart';
 
 class RoundButton extends StatelessWidget {
   const RoundButton(
@@ -31,28 +30,6 @@ class RoundButton extends StatelessWidget {
             padding: padding,
             child: icon,
           ),
-        ),
-      ),
-    );
-    return RawMaterialButton(
-      onPressed: onPressed,
-      shape: const CircleBorder(),
-      elevation: 2.0,
-      fillColor: Colors.white,
-      padding: const EdgeInsets.all(0),
-      child: icon,
-    );
-    return SizedBox(
-      width: Utils.getPercentValueFromScreenWidth(widthFactor, context),
-      height: Utils.getPercentValueFromScreenWidth(heightFactor, context),
-      child: AspectRatio(
-        aspectRatio: 1 / 1,
-        child: RawMaterialButton(
-          onPressed: onPressed,
-          shape: const CircleBorder(),
-          elevation: 4,
-          fillColor: backgroundColor,
-          child: icon,
         ),
       ),
     );

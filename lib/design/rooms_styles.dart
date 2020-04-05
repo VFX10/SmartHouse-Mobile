@@ -70,10 +70,12 @@ class RoomsStyles {
   };
 
   Map<String, dynamic> getRoomStyle() {
-    if(name == '') return roomStyle['default'];
+    if (name == '') {
+      return roomStyle['default'];
+    }
     for (final String key in roomStyle.keys.toList()) {
-      if (key.toLowerCase().startsWith(name.toLowerCase()) ||
-          name.toLowerCase().contains(key.toLowerCase())) {
+      if (name != null && (key.toLowerCase().startsWith(name.toLowerCase()) ||
+          name.toLowerCase().contains(key.toLowerCase()))) {
         return roomStyle[key];
       }
     }

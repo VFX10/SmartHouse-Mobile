@@ -1,6 +1,3 @@
-import 'package:Homey/data/devices_states/add_device_state.dart';
-import 'package:Homey/data/models/devices_models/add_device_model.dart';
-import 'package:Homey/data/on_result_callback.dart';
 import 'package:Homey/design/colors.dart';
 import 'package:Homey/design/dialogs.dart';
 import 'package:Homey/design/widgets/textfield.dart';
@@ -9,6 +6,9 @@ import 'package:Homey/helpers/forms_helpers/form_validations.dart';
 import 'package:Homey/helpers/forms_helpers/forms_helpers.dart';
 import 'package:Homey/helpers/sql_helper/data_models/sensor_model.dart';
 import 'package:Homey/helpers/utils.dart';
+import 'package:Homey/models/devices_models/add_device_model.dart';
+import 'package:Homey/states/devices_states/add_device_state.dart';
+import 'package:Homey/states/on_result_callback.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -29,6 +29,46 @@ class DeviceConfig extends StatelessWidget {
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final GlobalKey<State> _keyLoader = GlobalKey<State>();
+
+  void onResult(dynamic data, ResultState resultState) {
+    switch (resultState) {
+      case ResultState.error:
+        if (Navigator.canPop(_keyLoader.currentContext)) {
+          Navigator.pop(_keyLoader.currentContext);
+        }
+        Dialogs.showSimpleDialog('Error', data, _keyLoader.currentContext);
+        break;
+      case ResultState.successful:
+        if (Navigator.canPop(_keyLoader.currentContext)) {
+          Navigator.pop(_keyLoader.currentContext);
+        }
+        event();
+        break;
+      case ResultState.loading:
+        Dialogs.showProgressDialog(data, _keyLoader.currentContext);
+        break;
+    }
+  }
+
+  void saveConfig() {
+    FocusScope.of(_keyLoader.currentContext).unfocus();
+
+    if (_formKey.currentState.validate()) {
+      _formKey.currentState.save();
+      state.saveDeviceConfiguration(
+        model: AddDeviceModel(
+          server: serverController.text,
+          port: int.parse(portController.text),
+          sensor: SensorModel(
+              name: sensorNameController.text,
+              readingFrequency: int.parse(readingFrequencyController.text)),
+          onResult: onResult,
+        ),
+      );
+    } else {
+      state.deviceConfigAutoValidate = true;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,9 +103,8 @@ class DeviceConfig extends StatelessWidget {
                       ),
                       Text(
                         state.deviceConfig.sensor.sensorType != null
-                            ? DataTypes
-                                    .sensorsType[state.deviceConfig.sensor.sensorType]
-                                ['text']
+                            ? DataTypes.sensorsType[
+                                state.deviceConfig.sensor.sensorType]['text']
                             : DataTypes.sensorsType[0]['text'],
                         textAlign: TextAlign.center,
                         style: const TextStyle(fontSize: 30),
@@ -152,46 +191,4 @@ class DeviceConfig extends StatelessWidget {
       ),
     );
   }
-
-  void onResult(dynamic data, ResultState resultState) {
-    switch (resultState) {
-      case ResultState.error:
-        if (Navigator.canPop(_keyLoader.currentContext)) {
-          Navigator.pop(_keyLoader.currentContext);
-        }
-        Dialogs.showSimpleDialog('Error', data, _keyLoader.currentContext);
-        break;
-      case ResultState.successful:
-        if (Navigator.canPop(_keyLoader.currentContext)) {
-          Navigator.pop(_keyLoader.currentContext);
-        }
-        event();
-        break;
-      case ResultState.loading:
-        Dialogs.showProgressDialog(data, _keyLoader.currentContext);
-        break;
-    }
-  }
-
-  void saveConfig() {
-    FocusScope.of(_keyLoader.currentContext).unfocus();
-
-    if (_formKey.currentState.validate()) {
-      _formKey.currentState.save();
-      state.saveDeviceConfiguration(
-        model: AddDeviceModel(
-          server: serverController.text,
-          port: int.parse(portController.text),
-          sensor: SensorModel(
-              name: sensorNameController.text,
-              readingFrequency: int.parse(readingFrequencyController.text)),
-          onResult: onResult,
-        ),
-      );
-    } else {
-      state.deviceConfigAutoValidate = true;
-    }
-  }
-
-
 }

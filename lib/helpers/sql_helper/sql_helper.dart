@@ -38,15 +38,15 @@ class SqlHelper {
 // open the database
     _database = await openDatabase(path, version: 1,
         onCreate: (Database db, int version) async {
-          await db.execute(
-              'CREATE TABLE IF NOT EXISTS UserData (id INTEGER PRIMARY KEY, email TEXT, firstName TEXT, lastName TEXT);');
-          await db.execute(
-              'CREATE TABLE IF NOT EXISTS Houses (id INTEGER PRIMARY KEY, userId INTEGER, dbId INTEGER, name TEXT, address TEXT);');
-          await db.execute(
-              'CREATE TABLE IF NOT EXISTS Rooms (id INTEGER PRIMARY KEY, houseId INTEGER, dbId INTEGER, name TEXT);');
-          await db.execute(
-              'CREATE TABLE IF NOT EXISTS Sensors (id INTEGER PRIMARY KEY, roomId INTEGER, dbId INTEGER, name TEXT, sensorType INTEGER, ipAddress TEXT, macAddress TEXT, readingFrequency INTEGER, networkStatus BOOLEAN);');
-        });
+      await db.execute(
+          'CREATE TABLE IF NOT EXISTS UserData (id INTEGER PRIMARY KEY, email TEXT, firstName TEXT, lastName TEXT);');
+      await db.execute(
+          'CREATE TABLE IF NOT EXISTS Houses (id INTEGER PRIMARY KEY, userId INTEGER, dbId INTEGER, name TEXT, address TEXT);');
+      await db.execute(
+          'CREATE TABLE IF NOT EXISTS Rooms (id INTEGER PRIMARY KEY, houseId INTEGER, dbId INTEGER, name TEXT);');
+      await db.execute(
+          'CREATE TABLE IF NOT EXISTS Sensors (id INTEGER PRIMARY KEY, roomId INTEGER, dbId INTEGER, name TEXT, sensorType INTEGER, ipAddress TEXT, macAddress TEXT, readingFrequency INTEGER, networkStatus BOOLEAN);');
+    });
     log('database', error: _database.isOpen);
   }
 
@@ -71,10 +71,13 @@ class SqlHelper {
               'INSERT INTO Rooms(houseId, dbId, name) VALUES ($houseId, ${room['id']}, "${room['name']}");');
           for (final Map<String, dynamic> sensor in room['sensors']) {
             await transaction.rawInsert(
-                'INSERT INTO Sensors(roomId, dbId, name, sensorType, readingFrequency, macAddress, networkStatus) VALUES ($roomId, ${sensor['id']}, "${sensor['name']}", "${sensor['sensorType']}",${sensor['readingFrequency']}, "${sensor['macAddress']}", "${sensor['networkStatus'] ==
-                    1}");');
+                'INSERT INTO Sensors(roomId, dbId, name, sensorType, readingFrequency, macAddress, networkStatus) VALUES ($roomId, ${sensor['id']}, "${sensor['name']}", "${sensor['sensorType']}",${sensor['readingFrequency']}, "${sensor['macAddress']}", "${sensor['networkStatus']}");');
           }
         }
+      }
+      for (final Map<String, dynamic> device in data['allSensors']) {
+        await transaction.rawInsert(
+            'INSERT INTO Sensors(dbId, name, sensorType, readingFrequency, macAddress, networkStatus) VALUES (${device['id']}, "${device['name']}", "${device['sensorType']}",${device['readingFrequency']}, "${device['macAddress']}", "${device['networkStatus']}");');
       }
     }).then((_) async {
       await AppDataManager().fetchData();
@@ -86,7 +89,7 @@ class SqlHelper {
 
   Future<List<HomeModel>> getAllHouses() async {
     final List<Map<String, dynamic>> list =
-    await _database.rawQuery('SELECT DISTINCT * FROM Houses ORDER BY dbId');
+        await _database.rawQuery('SELECT DISTINCT * FROM Houses ORDER BY dbId');
     return List<HomeModel>.generate(list.length, (int i) {
       return HomeModel(
         id: list[i]['id'],
@@ -116,40 +119,61 @@ class SqlHelper {
 
   Future<void> addHome(HomeModel house) async {
     await _database.rawInsert(
-        'INSERT INTO Houses(userId, dbId, name, address) VALUES (${house
-            .userId}, ${house.dbId}, "${house.name}", "${house.address}");');
+        'INSERT INTO Houses(userId, dbId, name, address) VALUES (${house.userId}, ${house.dbId}, "${house.name}", "${house.address}");');
   }
 
   Future<void> addRoom(RoomModel room) async {
     await _database.rawInsert(
-        'INSERT INTO Rooms(houseId, dbId, name) VALUES (${room.houseId}, ${room
-            .dbId}, "${room.name}");');
+        'INSERT INTO Rooms(houseId, dbId, name) VALUES (${room.houseId}, ${room.dbId}, "${room.name}");');
   }
 
   Future<void> addSensor(SensorModel sensor) async {
     await _database.rawInsert(
-        'INSERT INTO Sensors(roomId, dbId, name, sensorType, ipAddress, macAddress) VALUES (${sensor
-            .roomId}, ${sensor.dbId}, "${sensor.name}", "${sensor
-            .sensorType}", "${sensor.ipAddress}", "${sensor.macAddress}");');
+        'INSERT INTO Sensors(roomId, dbId, name, sensorType, ipAddress, macAddress) VALUES (${sensor.roomId}, ${sensor.dbId}, "${sensor.name}", "${sensor.sensorType}", "${sensor.ipAddress}", "${sensor.macAddress}");');
+  }
+
+  Future<void> addSensorsToRoom(int roomId, List<SensorModel> devices) async {
+    await _database.transaction((Transaction transaction) async {
+      for (final SensorModel device in devices) {
+        log('dev', error: device);
+        await transaction.rawUpdate(
+            'UPDATE Sensors SET roomId = $roomId WHERE macAddress = "${device.macAddress}";');
+      }
+    });
   }
 
   Future<void> updateSensor(SensorModel sensor) async {
-//    await _database.update(
-//      'Sensors',
-//      sensor.toMap(),
-//      // Ensure that the Dog has a matching id.
-//      where: "macAddress = ?",
-//      // Pass the Dog's id as a whereArg to prevent SQL injection.
-//      whereArgs: [sensor.macAddress],
-//    );
-
     await _database.rawUpdate(
-        'UPDATE Sensors SET roomId = ${sensor.roomId}, dbId = ${sensor
-            .dbId}, name = "${sensor.name}", sensorType = ${sensor
-            .sensorType}, ipAddress = "${sensor
-            .ipAddress}", networkStatus = "${sensor
-            .networkStatus}", readingFrequency = ${sensor
-            .readingFrequency} WHERE macAddress = "${sensor.macAddress}";');
+        'UPDATE Sensors SET roomId = ${sensor.roomId}, dbId = ${sensor.dbId}, name = "${sensor.name}", sensorType = ${sensor.sensorType}, ipAddress = "${sensor.ipAddress}", networkStatus = "${sensor.networkStatus}", readingFrequency = ${sensor.readingFrequency} WHERE macAddress = "${sensor.macAddress}";');
+  }
+
+  Future<void> removeDeviceFromRoom(SensorModel sensor) async {
+    await _database.rawUpdate(
+        'UPDATE Sensors SET roomId = NULL WHERE macAddress = "${sensor.macAddress}";');
+  }
+
+  Future<void> removeRoom(int roomId) async {
+    await _database.transaction((Transaction transaction) async {
+      try {
+        await transaction.rawUpdate(
+            'UPDATE Sensors SET roomId = NULL WHERE roomId = $roomId;');
+        await transaction.rawDelete('DELETE FROM Rooms WHERE id = $roomId;');
+
+      } catch (e) {
+        print(e);
+      }
+    });
+  }
+  Future<void> updateRoom(int roomId, String name) async {
+    await _database.transaction((Transaction transaction) async {
+      try {
+        await transaction.rawUpdate(
+            'UPDATE Rooms SET name = "$name" WHERE id = $roomId;');
+
+      } catch (e) {
+        print(e);
+      }
+    });
   }
 
   Future<List<Map<String, dynamic>>> getRoomsByHouseId(int houseId) async {
@@ -165,7 +189,7 @@ class SqlHelper {
     log('getUserData database', error: _database.isOpen);
 
     final List<Map<String, dynamic>> list =
-    await _database.rawQuery('SELECT DISTINCT * FROM UserData LIMIT 1');
+        await _database.rawQuery('SELECT DISTINCT * FROM UserData LIMIT 1');
     log('list Users', error: list);
     if (list.isEmpty) {
       return null;
@@ -185,13 +209,12 @@ class SqlHelper {
     final List<Map<String, dynamic>> rooms = await _database.rawQuery(
         'SELECT DISTINCT r.* FROM Rooms AS r INNER JOIN Houses AS h ON h.id = r.houseId WHERE h.id = $homeId ORDER BY r.name');
     final List<Map<String, dynamic>> sensors =
-    await _database.rawQuery('SELECT DISTINCT s.* '
-        'FROM Sensors AS s '
-        'INNER JOIN Rooms AS r ON r.id = s.roomId '
-        'INNER JOIN Houses AS h ON h.id = r.houseId '
-        'WHERE h.id = $homeId '
-        'ORDER BY s.sensorType'
-    );
+        await _database.rawQuery('SELECT DISTINCT s.* '
+            'FROM Sensors AS s '
+            'INNER JOIN Rooms AS r ON r.id = s.roomId '
+            'INNER JOIN Houses AS h ON h.id = r.houseId '
+            'WHERE h.id = $homeId '
+            'ORDER BY s.sensorType');
     log('gggg', error: sensors.toString());
     if (list.isEmpty) {
       return null;
@@ -205,7 +228,7 @@ class SqlHelper {
         rooms: List<RoomModel>.generate(rooms.length, (int i) {
           final List<dynamic> sortedSensors = sensors
               .where((Map<String, dynamic> sensor) =>
-          sensor['roomId'] == rooms[i]['id'])
+                  sensor['roomId'] == rooms[i]['id'])
               .toList();
           return RoomModel(
               id: rooms[i]['id'],
@@ -213,7 +236,7 @@ class SqlHelper {
               dbId: rooms[i]['dbId'],
               name: rooms[i]['name'],
               sensors:
-              List<SensorModel>.generate(sortedSensors.length, (int j) {
+                  List<SensorModel>.generate(sortedSensors.length, (int j) {
                 return SensorModel(
                     id: sortedSensors[j]['id'],
                     dbId: sortedSensors[j]['dbId'],
@@ -230,13 +253,13 @@ class SqlHelper {
 
   Future<void> selectAll() async {
     final List<Map<String, dynamic>> list =
-    await _database.rawQuery('SELECT DISTINCT * FROM UserData');
+        await _database.rawQuery('SELECT DISTINCT * FROM UserData');
     final List<Map<String, dynamic>> list1 =
-    await _database.rawQuery('SELECT DISTINCT* FROM Houses');
+        await _database.rawQuery('SELECT DISTINCT* FROM Houses');
     final List<Map<String, dynamic>> list2 =
-    await _database.rawQuery('SELECT DISTINCT * FROM Rooms');
+        await _database.rawQuery('SELECT DISTINCT * FROM Rooms');
     final List<Map<String, dynamic>> list3 =
-    await _database.rawQuery('SELECT DISTINCT * FROM Sensors');
+        await _database.rawQuery('SELECT DISTINCT * FROM Sensors');
     log('selectU', error: list);
     log('selectH', error: list1);
     log('selectR', error: list2);

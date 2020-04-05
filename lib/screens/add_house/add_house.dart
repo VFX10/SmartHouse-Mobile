@@ -1,11 +1,11 @@
 import 'dart:developer';
 
-import 'package:Homey/data/add_house_state.dart';
-import 'package:Homey/data/models/add_house_model.dart';
-import 'package:Homey/data/on_result_callback.dart';
+import 'package:Homey/models/add_house_model.dart';
 import 'package:Homey/screens/add_house/pages/check_location/check_location.dart';
 import 'package:Homey/screens/add_house/pages/first_page/first_page.dart';
-import 'package:Homey/screens/home/menu.dart';
+import 'package:Homey/screens/menu/menu.dart';
+import 'package:Homey/states/add_house_state.dart';
+import 'package:Homey/states/on_result_callback.dart';
 import 'package:flutter/material.dart';
 import 'package:Homey/design/dialogs.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';

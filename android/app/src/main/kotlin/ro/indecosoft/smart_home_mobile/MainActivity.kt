@@ -1,4 +1,4 @@
-package ro.indecosoft.Homey
+package ro.indecosoft.homey
 
 import androidx.annotation.NonNull;
 import io.flutter.embedding.android.FlutterActivity

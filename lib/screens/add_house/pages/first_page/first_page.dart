@@ -1,5 +1,6 @@
-import 'package:Homey/data/add_house_state.dart';
+
 import 'package:Homey/design/widgets/buttons/round_rectangle_button.dart';
+import 'package:Homey/states/add_house_state.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:Homey/design/colors.dart';

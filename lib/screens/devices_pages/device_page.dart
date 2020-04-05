@@ -1,8 +1,6 @@
-import 'dart:developer';
-
 import 'package:Homey/design/colors.dart';
 import 'package:Homey/design/widgets/buttons/round_button.dart';
-import 'package:Homey/design/widgets/network_status.dart';
+import 'package:Homey/design/widgets/device_list_item.dart';
 import 'package:Homey/helpers/data_types.dart';
 import 'package:Homey/helpers/sql_helper/data_models/sensor_model.dart';
 import 'package:Homey/screens/add_device/add_device_page.dart';
@@ -105,8 +103,9 @@ class _DevicePageState extends State<DevicePage> {
                         ),
                       ),
                     for (final SensorModel sensor in sortedDevices)
-                      GestureDetector(
-                        onTap: () {
+                      DeviceListItem(
+                        sensor: sensor,
+                        onPressed: (){
                           switch(widget.deviceType){
                             case 0:
 
@@ -128,25 +127,50 @@ class _DevicePageState extends State<DevicePage> {
                               break;
                           }
                         },
-                        child: Card(
-                          elevation: 20,
-                          color: ColorsTheme.backgroundCard,
-                          child: Container(
-                            padding: const EdgeInsets.all(16),
-                            child: Row(
-                              children: <Widget>[
-                                Icon(DataTypes.sensorsType[widget.deviceType]['icon']),
-                                const SizedBox(
-                                  width: 10,
-                                ),
-                                Text(sensor.name),
-                                const Spacer(),
-                                 NetworkStatusLabel(online: sensor.networkStatus),
-                              ],
-                            ),
-                          ),
-                        ),
                       ),
+//                      InkWell(
+//                        splashColor: ColorsTheme.backgroundDarker,
+//                        onTap: () {
+//                          switch(widget.deviceType){
+//                            case 0:
+//
+//                              break;
+//                            case 1:
+//
+//                              break;
+//                            case 2:
+//                              Navigator.push<SwitchDevicePage>(
+//                                  context,
+//                                  MaterialPageRoute<SwitchDevicePage>(
+//                                      builder: (_) => SwitchDevicePage(sensor: sensor)));
+//                              break;
+//                            case 3:
+//                              Navigator.push<TempDevicePage>(
+//                                  context,
+//                                  MaterialPageRoute<TempDevicePage>(
+//                                      builder: (_) => TempDevicePage(sensor: sensor)));
+//                              break;
+//                          }
+//                        },
+//                        child: Card(
+//                          elevation: 20,
+//                          color: ColorsTheme.backgroundCard,
+//                          child: Container(
+//                            padding: const EdgeInsets.all(16),
+//                            child: Row(
+//                              children: <Widget>[
+//                                Icon(DataTypes.sensorsType[widget.deviceType]['icon']),
+//                                const SizedBox(
+//                                  width: 10,
+//                                ),
+//                                Text(sensor.name),
+//                                const Spacer(),
+//                                 NetworkStatusLabel(online: sensor.networkStatus),
+//                              ],
+//                            ),
+//                          ),
+//                        ),
+//                      ),
                   ],
                 ),
               ),

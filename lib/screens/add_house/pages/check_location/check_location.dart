@@ -1,8 +1,8 @@
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:Homey/data/add_house_state.dart';
 import 'package:Homey/screens/add_house/pages/first_setup_template/first_setup_template_page.dart';
+import 'package:Homey/states/add_house_state.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:permission_handler/permission_handler.dart';

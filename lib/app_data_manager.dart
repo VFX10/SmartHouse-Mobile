@@ -1,6 +1,5 @@
 import 'dart:developer';
 import 'package:Homey/helpers/sql_helper/data_models/home_model.dart';
-import 'package:Homey/helpers/sql_helper/data_models/room_model.dart';
 import 'package:Homey/helpers/sql_helper/data_models/sensor_model.dart';
 import 'package:Homey/helpers/sql_helper/data_models/user_model.dart';
 import 'package:Homey/helpers/sql_helper/sql_helper.dart';
@@ -35,11 +34,6 @@ class AppDataManager {
     // ignore: cascade_invocations
     houses.addAll(await SqlHelper().getAllHouses());
     defaultHome ??= houses[0];
-  }
-
-  Future<dynamic> addRoom(RoomModel room) async {
-    await SqlHelper().addRoom(room);
-    defaultHome.rooms.add(room);
   }
 
   Future<dynamic> addSensor(SensorModel sensor) async {

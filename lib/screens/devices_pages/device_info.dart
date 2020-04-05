@@ -1,11 +1,11 @@
 import 'dart:developer';
 
-import 'package:Homey/data/on_result_callback.dart';
 import 'package:Homey/design/colors.dart';
 import 'package:Homey/design/dialogs.dart';
 import 'package:Homey/design/widgets/network_status.dart';
 import 'package:Homey/helpers/data_types.dart';
 import 'package:Homey/helpers/sql_helper/data_models/sensor_model.dart';
+import 'package:Homey/states/on_result_callback.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -20,6 +20,18 @@ class DeviceInfo extends StatefulWidget {
 }
 
 class _DeviceInfoState extends State<DeviceInfo> {
+  void onResult(dynamic data, ResultState state) {
+    switch (state) {
+      case ResultState.successful:
+        Dialogs.showSimpleDialog('Success', data, context);
+        break;
+      case ResultState.error:
+        break;
+      case ResultState.loading:
+        break;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     log('sssss', error: widget.sensor.toMap().toString());
@@ -35,7 +47,7 @@ class _DeviceInfoState extends State<DeviceInfo> {
               padding: const EdgeInsets.all(16),
               color: ColorsTheme.backgroundCard,
               child: Row(
-                mainAxisAlignment:  MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.end,
                 children: <Widget>[
                   Icon(
@@ -154,7 +166,8 @@ class _DeviceInfoState extends State<DeviceInfo> {
           children: <Widget>[
             IconButton(
               icon: Icon(MdiIcons.restart),
-              onPressed: () => widget.state.rebootDevice(widget.sensor, onResult),
+              onPressed: () =>
+                  widget.state.rebootDevice(widget.sensor, onResult),
             ),
           ],
         ),
@@ -169,17 +182,5 @@ class _DeviceInfoState extends State<DeviceInfo> {
         ),
       ),
     );
-  }
-  void onResult( dynamic data, ResultState state) {
-    switch(state) {
-
-      case ResultState.successful:
-        Dialogs.showSimpleDialog('Success', data, context);
-        break;
-      case ResultState.error:
-        break;
-      case ResultState.loading:
-        break;
-    }
   }
 }

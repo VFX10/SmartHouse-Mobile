@@ -12,7 +12,7 @@ class DataTypes {
     1: <String, dynamic>{
       'text': 'UV Sensor',
       'title' : 'UV Sensors',
-
+      'icon': MdiIcons.weatherSunny,
     },
     2: <String, dynamic>{
       'text': 'Switch',

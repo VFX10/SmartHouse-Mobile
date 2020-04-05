@@ -61,6 +61,5 @@ class Dialogs {
         );
       },
     );
-    return null;
   }
 }

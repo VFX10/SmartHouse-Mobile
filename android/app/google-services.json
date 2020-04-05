@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1077759558273",
+    "firebase_url": "https://homey-92399.firebaseio.com",
+    "project_id": "homey-92399",
+    "storage_bucket": "homey-92399.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1077759558273:android:a7d0cd796518b764b90380",
+        "android_client_info": {
+          "package_name": "ro.indecosoft.homey"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1077759558273-49i7u8110o6494akmchba1f06bmop225.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA_vaNXc3bxQZ_KNatOem8Bors7BaY6BBQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1077759558273-49i7u8110o6494akmchba1f06bmop225.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1077759558273-r2unq8eh5610mi52t1isu0rkf357qvum.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "ro.indecosoft.homey"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
