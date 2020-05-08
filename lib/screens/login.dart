@@ -1,6 +1,6 @@
 import 'dart:developer';
 
-import 'package:Homey/main.dart';
+import 'package:Homey/helpers/states_manager.dart';
 import 'package:Homey/models/login_model.dart';
 import 'package:Homey/screens/menu/menu.dart';
 import 'package:Homey/states/login_state.dart';

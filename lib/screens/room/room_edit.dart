@@ -75,7 +75,7 @@ class _RoomEditState extends State<RoomEdit> {
               MaterialPageRoute<DeviceSelector>(
                   builder: (_) => DeviceSelector(
                       roomDbId: widget.room.dbId, roomId: widget.room.id))),
-          backgroundColor: Colors.white,
+//          backgroundColor: Colors.white,
           child: Icon(MdiIcons.plus),
         ),
         body: Stack(
@@ -99,8 +99,8 @@ class _RoomEditState extends State<RoomEdit> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
-                      Expanded(
-                        flex: 8,
+                      Flexible(
+                        flex: 7,
                         child: Row(
                           mainAxisSize: MainAxisSize.max,
                           children: <Widget>[
@@ -173,7 +173,7 @@ class _RoomEditState extends State<RoomEdit> {
                       AsyncSnapshot<List<SensorModel>> snapshot) {
                     return ListView.builder(
                       controller: ctrl,
-                      padding: const EdgeInsets.all(16),
+                      padding: const EdgeInsets.only(left:16, top: 16, right: 16, bottom: 90),
                       itemCount: _state.currentSensors.length,
                       itemBuilder: (BuildContext context, int index) {
                         return DeviceListItem(

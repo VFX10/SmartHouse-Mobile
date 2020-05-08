@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:Homey/app_data_manager.dart';
 
 import 'package:Homey/helpers/sql_helper/data_models/home_model.dart';
@@ -26,7 +24,6 @@ class MenuState {
 
   Future<void> changeHouse(
       {@required int houseId}) async {
-    log('changed', error: houseId);
     for (final HomeModel home in AppDataManager().houses) {
       if (home.id == houseId) {
         await AppDataManager().changeDefaultHome(houseId);

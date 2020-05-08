@@ -108,8 +108,8 @@ class _GeolocationPageState extends State<GeolocationPage>
                           vertical: 11, horizontal: 16),
                       child: Row(
                           mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            const Padding(
+                          children: const <Widget>[
+                            Padding(
                               padding: EdgeInsets.only(right: 10.0),
                               child: Icon(MdiIcons.crosshairsGps),
                             ),
@@ -130,17 +130,18 @@ class _GeolocationPageState extends State<GeolocationPage>
                       padding: const EdgeInsets.symmetric(
                           vertical: 11, horizontal: 16),
                       child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            const Padding(
-                              padding: EdgeInsets.only(right: 10.0),
-                              child: Icon(MdiIcons.keyboardOutline),
-                            ),
-                            Text(
-                              'Enter home address',
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ]),
+                        mainAxisSize: MainAxisSize.min,
+                        children: const <Widget>[
+                          Padding(
+                            padding: EdgeInsets.only(right: 10.0),
+                            child: Icon(MdiIcons.keyboardOutline),
+                          ),
+                          Text(
+                            'Enter home address',
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],

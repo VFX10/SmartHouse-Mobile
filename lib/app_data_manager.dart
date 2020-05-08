@@ -67,14 +67,16 @@ class AppDataManager {
     sensors.clear();
     prefs = await SharedPreferences.getInstance();
     token = prefs.getString('token') ?? '';
-    if (token.isEmpty) {
-      return '';
-    }
+
     userData = await SqlHelper().getUserData();
     defaultHome =
         await SqlHelper().getHomeInfoById(prefs.getInt('defaultHomeId') ?? 1);
     houses.addAll(await SqlHelper().getAllHouses());
     sensors.addAll(await SqlHelper().getAllSensors());
+//    log('fetching data', error: token);
+    if (token.isEmpty) {
+      return '';
+    }
 //    await SqlHelper().selectAll();
 //    await removeData();
     return token;

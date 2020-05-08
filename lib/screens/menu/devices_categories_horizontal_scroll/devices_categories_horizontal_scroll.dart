@@ -158,6 +158,26 @@ class DevicesHorizontalScroll extends StatelessWidget {
             verticalOffset: -115,
             child: FadeInAnimation(
               child: DeviceCard(
+                icon: MdiIcons.counter,
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute<DevicePage>(
+                    builder: (_) => const DevicePage(
+                      deviceType: 7,
+                    ),
+                  ),
+                ),
+                label: 'Power Consumption Sensors',
+              ),
+            ),
+          ),
+        ),AnimationConfiguration.staggeredList(
+          position: 8,
+          duration: const Duration(milliseconds: 500),
+          child: SlideAnimation(
+            verticalOffset: -115,
+            child: FadeInAnimation(
+              child: DeviceCard(
                 icon: MdiIcons.playSpeed,
                 onPressed: () {},
                 label: 'Scenes',
@@ -166,7 +186,7 @@ class DevicesHorizontalScroll extends StatelessWidget {
           ),
         ),
         AnimationConfiguration.staggeredList(
-          position: 8,
+          position: 9,
           duration: const Duration(milliseconds: 500),
           child: SlideAnimation(
             verticalOffset: -115,

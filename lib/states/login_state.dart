@@ -1,4 +1,6 @@
+import 'package:Homey/helpers/firebase.dart';
 import 'package:Homey/helpers/sql_helper/sql_helper.dart';
+import 'package:Homey/helpers/states_manager.dart';
 import 'package:Homey/helpers/web_requests_helpers/web_requests_helpers.dart';
 import 'package:Homey/models/login_model.dart';
 import 'package:flutter/material.dart';
@@ -43,6 +45,8 @@ class LoginState {
             await (await SharedPreferences.getInstance())
                 .setString('token', data['token']);
             await SqlHelper().insert(data['data']);
+            getIt.get<FirebaseHelper>().initFirebase();
+
             model.onResult(data, ResultState.successful);
           } else {
             model.onResult(data['error'].toString(), ResultState.error);

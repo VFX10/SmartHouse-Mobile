@@ -5,7 +5,7 @@ import 'package:Homey/design/dialogs.dart';
 import 'package:Homey/design/widgets/buttons/round_button.dart';
 import 'package:Homey/design/widgets/device_list_item.dart';
 import 'package:Homey/helpers/sql_helper/data_models/sensor_model.dart';
-import 'package:Homey/main.dart';
+import 'package:Homey/helpers/states_manager.dart';
 import 'package:Homey/states/devices_states/device_selector_state.dart';
 import 'package:Homey/states/on_result_callback.dart';
 import 'package:flutter/material.dart';

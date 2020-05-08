@@ -4,8 +4,13 @@ import 'package:Homey/design/widgets/device_list_item.dart';
 import 'package:Homey/helpers/data_types.dart';
 import 'package:Homey/helpers/sql_helper/data_models/sensor_model.dart';
 import 'package:Homey/screens/add_device/add_device_page.dart';
+import 'package:Homey/screens/devices_pages/devices_types/door_device_page.dart';
+import 'package:Homey/screens/devices_pages/devices_types/gas_device_page.dart';
+import 'package:Homey/screens/devices_pages/devices_types/light_device_page.dart';
+import 'package:Homey/screens/devices_pages/devices_types/power_consumption_page.dart';
 import 'package:Homey/screens/devices_pages/devices_types/switch_device_page.dart';
 import 'package:Homey/screens/devices_pages/devices_types/temp_device_page.dart';
+import 'package:Homey/screens/devices_pages/devices_types/uv_sensor_page.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
@@ -111,7 +116,10 @@ class _DevicePageState extends State<DevicePage> {
 
                               break;
                             case 1:
-
+                              Navigator.push<UVSensorPage>(
+                                  context,
+                                  MaterialPageRoute<UVSensorPage>(
+                                      builder: (_) => UVSensorPage(sensor: sensor)));
                               break;
                             case 2:
                               Navigator.push<SwitchDevicePage>(
@@ -124,6 +132,30 @@ class _DevicePageState extends State<DevicePage> {
                                   context,
                                   MaterialPageRoute<TempDevicePage>(
                                       builder: (_) => TempDevicePage(sensor: sensor)));
+                              break;
+                            case 4:
+                              Navigator.push<LightDevicePage>(
+                                  context,
+                                  MaterialPageRoute<LightDevicePage>(
+                                      builder: (_) => LightDevicePage(sensor: sensor)));
+                              break;
+                            case 5:
+                              Navigator.push<GasDevicePage>(
+                                  context,
+                                  MaterialPageRoute<GasDevicePage>(
+                                      builder: (_) => GasDevicePage(sensor: sensor)));
+                              break;
+                            case 6:
+                              Navigator.push<DoorDevicePage>(
+                                  context,
+                                  MaterialPageRoute<DoorDevicePage>(
+                                      builder: (_) => DoorDevicePage(sensor: sensor)));
+                              break;
+                            case 7:
+                              Navigator.push<TempDevicePage>(
+                                  context,
+                                  MaterialPageRoute<TempDevicePage>(
+                                      builder: (_) => PowerConsumptionDevicePage(sensor: sensor)));
                               break;
                           }
                         },

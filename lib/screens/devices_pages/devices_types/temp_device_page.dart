@@ -7,8 +7,8 @@ import 'package:Homey/design/widgets/network_status.dart';
 import 'package:Homey/helpers/mqtt.dart';
 import 'package:Homey/helpers/sql_helper/data_models/sensor_model.dart';
 import 'package:Homey/helpers/utils.dart';
-import 'package:Homey/main.dart';
-import 'package:Homey/models/devices_models/device_temp_model.dart';
+import 'package:Homey/helpers/states_manager.dart';
+import 'package:Homey/models/devices_models/device_page_model.dart';
 import 'package:Homey/screens/devices_pages/device_info.dart';
 import 'package:Homey/states/devices_states/devices_temp_state.dart';
 import 'package:Homey/states/on_result_callback.dart';
@@ -32,12 +32,11 @@ class _TempDevicePageState extends State<TempDevicePage> {
 
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
-  Mqtt mqttClient;
 
   @override
   void dispose() {
     super.dispose();
-    mqttClient.disconnect();
+    getIt.get<MqttHelper>().sensor = null;
   }
 
   Future<void> _onRefresh() async {
@@ -47,12 +46,12 @@ class _TempDevicePageState extends State<TempDevicePage> {
   void onResult(dynamic data, ResultState resultState) {
     switch (resultState) {
       case ResultState.successful:
-        if (data is DeviceTempModel) {
+        if (data is DevicePageModel) {
           _refreshController.refreshCompleted();
         }
         break;
       case ResultState.error:
-        if (data is DeviceTempModel) {
+        if (data is DevicePageModel) {
           _refreshController.refreshFailed();
         } else {
           Dialogs.showSimpleDialog('Error', data, _keyLoader.currentContext);
@@ -66,7 +65,7 @@ class _TempDevicePageState extends State<TempDevicePage> {
 
   @override
   Widget build(BuildContext context) {
-    mqttClient = Mqtt(widget.sensor)..connect();
+    getIt.get<MqttHelper>().sensor = widget.sensor;
     return Scaffold(
       key: _keyLoader,
       body: SmartRefresher(
@@ -75,9 +74,10 @@ class _TempDevicePageState extends State<TempDevicePage> {
         onRefresh: _onRefresh,
         child: Stack(
           children: <Widget>[
-            StreamBuilder<DeviceTempModel>(
+            StreamBuilder<DevicePageModel>(
                 stream: _state.dataStream$,
-                builder: (BuildContext context, AsyncSnapshot<DeviceTempModel> snapshot) {
+                builder: (BuildContext context,
+                    AsyncSnapshot<DevicePageModel> snapshot) {
                   return Positioned.fill(
                     child: Container(
                       height:
@@ -85,32 +85,43 @@ class _TempDevicePageState extends State<TempDevicePage> {
                       child: AnimatedCrossFade(
                         duration: const Duration(seconds: 1),
                         firstChild: Container(
-                          height:
-                          Utils.getPercentValueFromScreenHeight(100, context),
-                          child: Image.asset(
-                            'assets/images/hall.jpg',
-                            fit: BoxFit.cover,
-                            color:  ColorsTheme.backgroundDarker.withOpacity(0.7),
-                            colorBlendMode: BlendMode.multiply,
-                          ),
-                        ),
-                        secondChild: Container(
-                          height:
-                          Utils.getPercentValueFromScreenHeight(100, context),
+                          height: Utils.getPercentValueFromScreenHeight(
+                              100, context),
                           child: ColorFiltered(
                             colorFilter: ColorFilter.mode(
                               Colors.grey,
                               BlendMode.saturation,
                             ),
                             child: Image.asset(
-                              'assets/images/hall.jpg',
+                              'assets/images/thermometer.jpg',
                               fit: BoxFit.cover,
-                              color: ColorsTheme.backgroundDarker.withOpacity(0.8),
+                              color:
+                                  ColorsTheme.backgroundDarker.withOpacity(1),
+                              colorBlendMode: BlendMode.screen,
+                            ),
+                          ),
+                        ),
+                        secondChild: Container(
+                          height: Utils.getPercentValueFromScreenHeight(
+                              100, context),
+                          child: ColorFiltered(
+                            colorFilter: ColorFilter.mode(
+                              Colors.grey,
+                              BlendMode.saturation,
+                            ),
+                            child: Image.asset(
+                              'assets/images/thermometer.jpg',
+                              fit: BoxFit.cover,
+                              color:
+                                  ColorsTheme.backgroundDarker.withOpacity(0.7),
                               colorBlendMode: BlendMode.multiply,
                             ),
                           ),
                         ),
-                        crossFadeState: _state.device.networkStatus ? CrossFadeState.showFirst : CrossFadeState.showSecond,
+                        crossFadeState: _state.device.networkStatus != null &&
+                                _state.device.networkStatus
+                            ? CrossFadeState.showFirst
+                            : CrossFadeState.showSecond,
                       ),
                     ),
                   );
@@ -139,10 +150,10 @@ class _TempDevicePageState extends State<TempDevicePage> {
                             widget.sensor.name,
                             style: const TextStyle(fontSize: 18),
                           ),
-                          StreamBuilder<DeviceTempModel>(
+                          StreamBuilder<DevicePageModel>(
                               stream: _state.dataStream$,
                               builder: (BuildContext context,
-                                  AsyncSnapshot<DeviceTempModel> snapshot) {
+                                  AsyncSnapshot<DevicePageModel> snapshot) {
                                 return NetworkStatusLabel(
                                   online: _state.device.networkStatus ?? false,
                                 );
@@ -158,12 +169,14 @@ class _TempDevicePageState extends State<TempDevicePage> {
                         ),
                         padding: const EdgeInsets.all(12),
                         onPressed: () => Navigator.push(
-                            context,
-                            MaterialPageRoute<DeviceInfo>(
-                                builder: (BuildContext context) => DeviceInfo(
-                                      sensor: widget.sensor,
-                                      state: _state,
-                                    ))),
+                          context,
+                          MaterialPageRoute<DeviceInfo>(
+                            builder: (BuildContext context) => DeviceInfo(
+                              sensor: widget.sensor,
+                              state: _state,
+                            ),
+                          ),
+                        ),
                       ),
                       const SizedBox(
                         width: 10,
@@ -182,138 +195,124 @@ class _TempDevicePageState extends State<TempDevicePage> {
                 ),
               ),
             ),
-            FutureBuilder<DeviceTempModel>(
+            FutureBuilder<DevicePageModel>(
               future: _state.getDeviceState(widget.sensor, onResult),
               builder: (BuildContext context,
-                  AsyncSnapshot<DeviceTempModel> snapshot) {
-                if (snapshot.hasError) {
-                  log('error', error: snapshot.error);
-                }
-                if (snapshot.connectionState == ConnectionState.waiting ||
-                    snapshot.connectionState == ConnectionState.none) {
-                  return const Center(
-                    child: CircularProgressIndicator(),
-                  );
-                } else {
-                  if (snapshot.hasData) {
-                    return Container(
-                      child: StreamBuilder<DeviceTempModel>(
-                          stream: _state.dataStream$,
-                          builder: (BuildContext context,
-                              AsyncSnapshot<DeviceTempModel> snapshot) {
-                            return Stack(
-                              children: <Widget>[
-                                Align(
-                                  alignment: Alignment.center,
-                                  child: FractionallySizedBox(
-                                    widthFactor: 0.6,
-                                    heightFactor: 0.3,
-                                    child: Stack(
-                                      overflow: Overflow.visible,
-                                      children: <Widget>[
-                                        Align(
-                                          alignment: Alignment.center,
-                                          child: AspectRatio(
-                                            aspectRatio: 1 / 1,
-                                            child: ClipOval(
-                                              child: Container(
-                                                color: ColorsTheme
-                                                    .backgroundDarker
-                                                    .withOpacity(0.7),
-                                                child: Center(
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    children: <Widget>[
-                                                      Text(
-                                                        _state.device
-                                                            .data['temperature']
-                                                            .toString(),
-                                                        style: const TextStyle(
-                                                            fontWeight:
-                                                                FontWeight.bold,
-                                                            fontFamily:
-                                                                'Sriracha',
-                                                            fontSize: 32),
-                                                      ),
-                                                      const SizedBox(
-                                                        width: 1,
-                                                      ),
-                                                      Icon(
-                                                        MdiIcons
-                                                            .temperatureCelsius,
-                                                        size: 32,
-                                                      )
-                                                    ],
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                        Align(
-                                          alignment: const Alignment(1, -1.3),
-                                          child: FractionallySizedBox(
-                                            widthFactor: 0.4,
-                                            heightFactor: 0.4,
-                                            child: Align(
-                                              alignment: Alignment.center,
-                                              child: AspectRatio(
-                                                aspectRatio: 1 / 1,
-                                                child: ClipOval(
-                                                  child: Container(
-                                                    color: ColorsTheme.primary
-                                                        .withOpacity(0.9),
-                                                    child: Center(
-                                                      child: Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .center,
-                                                        children: <Widget>[
-                                                          Text(
-                                                            '${_state.device.data['humidity']}%',
-                                                            style: const TextStyle(
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                fontFamily:
-                                                                    'Sriracha',
-                                                                fontSize: 18),
-                                                          ),
-                                                          const SizedBox(
-                                                            width: 1,
-                                                          ),
-                                                          Icon(
-                                                            MdiIcons.water,
-                                                            size: 18,
-                                                          ),
-                                                        ],
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
+                  AsyncSnapshot<DevicePageModel> snapshot) {
+                return Align(
+                  alignment: Alignment.bottomLeft,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0, vertical: 32),
+                    child: StreamBuilder<DevicePageModel>(
+                        stream: _state.dataStream$,
+                        builder: (context, snapshot) {
+                          return Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text(
+                                    'Temperature:',
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                      fontFamily: 'Montserrat',
+                                      color:
+                                          _state.device.networkStatus != null &&
+                                                  _state.device.networkStatus
+                                              ? ColorsTheme.background
+                                              : ColorsTheme.textColor,
                                     ),
                                   ),
-                                ),
-                              ],
-                            );
-                          }),
-                    );
-                  } else {
-                    return const Center(
-                      child: Text(
-                        'Cannnot retrieve device status',
-                        textAlign: TextAlign.center,
-                      ),
-                    );
-                  }
-                }
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  Row(
+                                    children: <Widget>[
+                                      Text(
+                                        '${_state.device.data == null ? 0 : _state.device.data['temperature'] ?? 0}',
+                                        style: TextStyle(
+                                          fontSize: 24,
+                                          fontFamily: 'Montserrat',
+                                          color: _state.device.networkStatus !=
+                                                      null &&
+                                                  _state.device.networkStatus
+                                              ? ColorsTheme.background
+                                              : ColorsTheme.textColor,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        width: 1,
+                                      ),
+                                      Icon(
+                                        MdiIcons.temperatureCelsius,
+                                        size: 22,
+                                        color: _state.device.networkStatus !=
+                                                    null &&
+                                                _state.device.networkStatus
+                                            ? ColorsTheme.background
+                                            : ColorsTheme.textColor,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  Text(
+                                    'Humidity:',
+                                    style: TextStyle(
+                                      fontSize: 24,
+                                      fontFamily: 'Montserrat',
+                                      color:
+                                          _state.device.networkStatus != null &&
+                                                  _state.device.networkStatus
+                                              ? ColorsTheme.background
+                                              : ColorsTheme.textColor,
+                                    ),
+                                  ),
+                                  const SizedBox(
+                                    width: 10,
+                                  ),
+                                  Row(
+                                    children: <Widget>[
+                                      Text(
+                                        '${_state.device.data == null ? 0 : _state.device.data['humidity'] ?? 0}',
+                                        style: TextStyle(
+                                          fontSize: 24,
+                                          fontFamily: 'Montserrat',
+                                          color: _state.device.networkStatus !=
+                                                      null &&
+                                                  _state.device.networkStatus
+                                              ? ColorsTheme.background
+                                              : ColorsTheme.textColor,
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        width: 1,
+                                      ),
+                                      Icon(
+                                        MdiIcons.waterOutline,
+                                        size: 22,
+                                        color: _state.device.networkStatus !=
+                                                    null &&
+                                                _state.device.networkStatus
+                                            ? ColorsTheme.background
+                                            : ColorsTheme.textColor,
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              )
+                            ],
+                          );
+                        }),
+                  ),
+                );
               },
             ),
           ],

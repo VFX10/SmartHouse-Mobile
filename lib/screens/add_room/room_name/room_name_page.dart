@@ -12,7 +12,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:flare_flutter/flare_actor.dart';
 import 'package:flare_flutter/provider/asset_flare.dart';
 
-import 'package:Homey/main.dart';
+import 'package:Homey/helpers/states_manager.dart';
 
 class RoomName extends StatelessWidget {
   final TextEditingController roomNameController = TextEditingController();

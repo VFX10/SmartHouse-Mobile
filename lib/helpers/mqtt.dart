@@ -4,23 +4,21 @@ import 'dart:developer';
 
 import 'package:Homey/helpers/sql_helper/data_models/sensor_model.dart';
 import 'package:Homey/helpers/sql_helper/sql_helper.dart';
-import 'package:Homey/models/devices_models/device_switch_model.dart';
-import 'package:Homey/models/devices_models/device_temp_model.dart';
-import 'package:Homey/states/devices_states/devices_switch_state.dart';
+import 'package:Homey/helpers/states_manager.dart';
+import 'package:Homey/models/devices_models/device_page_model.dart';
 import 'package:Homey/states/devices_states/devices_temp_state.dart';
+import 'package:Homey/states/devices_states/power_consumption_state.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
 
-import '../main.dart';
+class MqttHelper {
+  MqttHelper({this.sensor});
 
-class Mqtt {
-  Mqtt(this.sensor);
-
-  final SensorModel sensor;
+  SensorModel sensor;
   String broker = '192.168.0.118';
   int port = 1883;
   String username = 'matteo';
-  String passwd = '1234';
+  String password = '1234';
   String clientIdentifier = 'android';
   MqttClient client;
   MqttConnectionState connectionState;
@@ -30,7 +28,7 @@ class Mqtt {
   Future<void> connect() async {
     client = MqttServerClient(broker, '')
       ..port = port
-      ..logging(on: true)
+      ..logging(on: false)
       ..keepAlivePeriod = 30;
 
     final MqttConnectMessage connMess = MqttConnectMessage()
@@ -42,7 +40,7 @@ class Mqtt {
     client.connectionMessage = connMess;
 
     try {
-      await client.connect(username, passwd);
+      await client.connect(username, password);
     } catch (e) {
       log('error', error: e);
     }
@@ -65,7 +63,7 @@ class Mqtt {
   }
 
   void _onDisconnected() {
-    print('[MQTT client] _onDisconnected');
+//    print('[MQTT client] _onDisconnected');
     connectionState = client.connectionStatus.state;
     client = null;
     onMessageSubscription.cancel();
@@ -79,44 +77,65 @@ class Mqtt {
     }
   }
 
-  void onSensorDataChanged(Map<String, dynamic> payload) {
-    if (sensor.macAddress.toLowerCase() ==
-        payload['macAddress'].toString().toLowerCase()) {
+  Future<void> onSensorDataChanged(Map<String, dynamic> payload) async {
+    log('onSensorDataChanged', error: payload);
+    await SqlHelper().updateSensorData(payload['data'].toString(),
+        payload['macAddress'].toString().toLowerCase());
+    if (sensor != null &&
+        sensor.macAddress.toLowerCase() ==
+            payload['macAddress'].toString().toLowerCase()) {
       switch (sensor.sensorType) {
+        case 1:
         case 2:
-          final DeviceSwitchState _state = getIt.get<DeviceSwitchState>();
-          _state.device = DeviceSwitchModel(
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+          final DeviceTempState _state = getIt.get<DeviceTempState>();
+          _state.device = DevicePageModel(
               name: _state.device.name,
               networkStatus: _state.device.networkStatus,
               data: payload['data']);
           break;
-        case 3:
-          final DeviceTempState _state = getIt.get<DeviceTempState>();
-          _state.device = DeviceTempModel(
-              name: _state.device.name,
-              networkStatus: _state.device.networkStatus,
-              data: payload['data']);
+        case 7:
+          final PowerConsumptionState _state =
+              getIt.get<PowerConsumptionState>();
+          _state.device = DevicePageModel(
+            name: _state.device.name,
+            networkStatus: _state.device.networkStatus,
+            data: payload['data'],
+          );
           break;
       }
     }
   }
 
-  Future<void> onSensorStatusChanged(Map<String, dynamic> payload) async  {
-    if (sensor.macAddress.toLowerCase() ==
-        jsonDecode(payload['client'])['name'].toString().toLowerCase()) {
-      log('is ok');
+  Future<void> onSensorStatusChanged(Map<String, dynamic> payload) async {
+    log('onSensorStatusChanged', error: payload);
+    await SqlHelper().updateSensorStatus(payload['status'] == 'online',
+        jsonDecode(payload['client'])['name'].toString().toLowerCase());
+
+    if (sensor != null &&
+        sensor.macAddress.toLowerCase() ==
+            jsonDecode(payload['client'])['name'].toString().toLowerCase()) {
       switch (sensor.sensorType) {
+        case 1:
         case 2:
-          final DeviceSwitchState _state = getIt.get<DeviceSwitchState>();
-          _state.device = DeviceSwitchModel(
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+          final DeviceTempState _state = getIt.get<DeviceTempState>();
+          _state.device = DevicePageModel(
             name: _state.device.name,
             networkStatus: payload['status'] == 'online',
             data: _state.device.data,
           );
           break;
-        case 3:
-          final DeviceTempState _state = getIt.get<DeviceTempState>();
-          _state.device = DeviceTempModel(
+        case 7:
+          final PowerConsumptionState _state =
+              getIt.get<PowerConsumptionState>();
+          _state.device = DevicePageModel(
             name: _state.device.name,
             networkStatus: payload['status'] == 'online',
             data: _state.device.data,
@@ -133,7 +152,7 @@ class Mqtt {
       final MqttPublishMessage recMess = event[0].payload;
       final String payloadString =
           MqttPublishPayload.bytesToStringAsString(recMess.payload.message);
-      log('Message received on <${event[0].topic}> topic, payload is <-- $payloadString -->');
+//      log('Message received on <${event[0].topic}> topic, payload is <-- $payloadString -->');
       switch (event[0].topic) {
         case 'SensorsDataChannel':
           onSensorDataChanged(jsonDecode(payloadString));

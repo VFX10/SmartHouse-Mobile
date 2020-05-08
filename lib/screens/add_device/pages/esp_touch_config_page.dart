@@ -3,7 +3,7 @@ import 'package:Homey/design/dialogs.dart';
 import 'package:Homey/design/widgets/buttons/round_rectangle_button.dart';
 import 'package:Homey/helpers/forms_helpers/form_validations.dart';
 import 'package:Homey/helpers/utils.dart';
-import 'package:Homey/main.dart';
+import 'package:Homey/helpers/states_manager.dart';
 import 'package:Homey/models/devices_models/network_config_model.dart';
 import 'package:Homey/states/devices_states/add_device_state.dart';
 import 'package:Homey/states/devices_states/network_status_state.dart';

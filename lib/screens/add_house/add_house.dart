@@ -10,7 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:Homey/design/dialogs.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:Homey/main.dart';
+import 'package:Homey/helpers/states_manager.dart';
 
 
 class AddHouse extends StatelessWidget {

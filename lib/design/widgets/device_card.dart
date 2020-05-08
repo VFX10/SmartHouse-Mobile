@@ -21,37 +21,47 @@ class DeviceCard extends StatelessWidget {
     if (isCategory) {
       return Padding(
         padding: const EdgeInsets.symmetric(vertical: 16.0, horizontal: 2.5),
-        child: AspectRatio(
-          aspectRatio: 1 / 1,
-          child: Card(
-            elevation: 10,
-            color: ColorsTheme.backgroundCard,
-            child: InkWell(
-              onTap: onPressed,
-              splashColor: ColorsTheme.backgroundDarker,
-              child: Stack(
-                children: <Widget>[
-                  Align(
-                    alignment: Alignment.center,
-                    child: Transform.scale(
-                      scale: 1.1,
-                      child: Icon(icon),
-                    ),
-                  ),
-                  Align(
-                    alignment: const Alignment(0, 1.7),
-                    child: Text(
-                      label,
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
-                      style: const TextStyle(
-                        color: Color(0xFFA5AEBB),
+        child: Transform.scale(
+          scale: 1,
+          child: Column(
+            children: <Widget>[
+              Flexible(
+                flex: 8,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width / 5 - 10),
+                  child: AspectRatio(
+                    aspectRatio: 1,
+                    child: Card(
+                      elevation: 10,
+                      color: ColorsTheme.backgroundCard,
+                      child: InkWell(
+                        onTap: onPressed,
+                        splashColor: ColorsTheme.backgroundDarker,
+                        child: Center(
+                          child: Icon(icon),
+                        ),
                       ),
                     ),
-                  )
-                ],
+                  ),
+                ),
               ),
-            ),
+              Flexible(
+                flex: 2,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                      maxWidth: MediaQuery.of(context).size.width / 5 - 20),
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+//                      fontSize: 20,
+                      color: Color(0xFFA5AEBB),
+                    ),
+                  ),
+                ),
+              )
+            ],
           ),
         ),
       );

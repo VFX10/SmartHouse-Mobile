@@ -1,6 +1,7 @@
 import 'package:Homey/design/widgets/buttons/round_button.dart';
 import 'package:Homey/design/widgets/buttons/round_rectangle_button.dart';
-import 'package:Homey/main.dart';
+import 'package:Homey/helpers/states_manager.dart';
+
 import 'package:Homey/screens/add_device/pages/esp_touch_config_page.dart';
 import 'package:Homey/screens/add_device/pages/rooms_selector.dart';
 import 'package:Homey/states/devices_states/add_device_state.dart';

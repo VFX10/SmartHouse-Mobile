@@ -1,5 +1,4 @@
 import 'package:Homey/app_data_manager.dart';
-import 'package:Homey/design/colors.dart';
 import 'package:Homey/design/widgets/buttons/round_button.dart';
 import 'package:Homey/design/widgets/device_list_item.dart';
 import 'package:Homey/design/widgets/empty_list_card.dart';

@@ -12,7 +12,7 @@ import 'package:Homey/design/widgets/textfield.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:Homey/helpers/forms_helpers/form_validations.dart';
 import 'package:Homey/helpers/forms_helpers/forms_helpers.dart';
-import 'package:Homey/main.dart';
+import 'package:Homey/helpers/states_manager.dart';
 
 class Register extends StatelessWidget {
   final RegisterState state = getIt.get<RegisterState>();

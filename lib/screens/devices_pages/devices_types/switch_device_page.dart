@@ -6,10 +6,10 @@ import 'package:Homey/design/widgets/network_status.dart';
 import 'package:Homey/helpers/mqtt.dart';
 import 'package:Homey/helpers/sql_helper/data_models/sensor_model.dart';
 import 'package:Homey/helpers/utils.dart';
-import 'package:Homey/main.dart';
-import 'package:Homey/models/devices_models/device_switch_model.dart';
+import 'package:Homey/helpers/states_manager.dart';
+import 'package:Homey/models/devices_models/device_page_model.dart';
 import 'package:Homey/screens/devices_pages/device_info.dart';
-import 'package:Homey/states/devices_states/devices_switch_state.dart';
+import 'package:Homey/states/devices_states/devices_temp_state.dart';
 import 'package:Homey/states/on_result_callback.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
@@ -24,12 +24,11 @@ class SwitchDevicePage extends StatefulWidget {
 }
 
 class _SwitchDevicePageState extends State<SwitchDevicePage> {
-  final DeviceSwitchState _state = getIt.get<DeviceSwitchState>();
+  final DeviceTempState _state = getIt.get<DeviceTempState>();
 
   final GlobalKey<State> _keyLoader = GlobalKey<State>();
   final RefreshController _refreshController =
       RefreshController(initialRefresh: false);
-  Mqtt mqttClient;
 
   Future<void> _onRefresh() async {
     await _state.getDeviceState(widget.sensor, onResult);
@@ -38,18 +37,18 @@ class _SwitchDevicePageState extends State<SwitchDevicePage> {
   @override
   void dispose() {
     super.dispose();
-    mqttClient.disconnect();
+    getIt.get<MqttHelper>().sensor = null;
   }
 
   void onResult(dynamic data, ResultState resultState) {
     switch (resultState) {
       case ResultState.successful:
-        if (data is DeviceSwitchModel) {
+        if (data is DevicePageModel) {
           _refreshController.refreshCompleted();
         }
         break;
       case ResultState.error:
-        if (data is DeviceSwitchModel) {
+        if (data is DevicePageModel) {
           _refreshController.refreshFailed();
         } else {
           Dialogs.showSimpleDialog('Error', data, _keyLoader.currentContext);
@@ -63,7 +62,7 @@ class _SwitchDevicePageState extends State<SwitchDevicePage> {
 
   @override
   Widget build(BuildContext context) {
-    mqttClient = Mqtt(widget.sensor)..connect();
+    getIt.get<MqttHelper>().sensor = widget.sensor;
     return Scaffold(
       key: _keyLoader,
       body: SmartRefresher(
@@ -73,10 +72,10 @@ class _SwitchDevicePageState extends State<SwitchDevicePage> {
         child: Stack(
           fit: StackFit.expand,
           children: <Widget>[
-            StreamBuilder<DeviceSwitchModel>(
+            StreamBuilder<DevicePageModel>(
                 stream: _state.dataStream$,
                 builder: (BuildContext context,
-                    AsyncSnapshot<DeviceSwitchModel> snapshot) {
+                    AsyncSnapshot<DevicePageModel> snapshot) {
                   return Positioned.fill(
                     child: AnimatedCrossFade(
                       duration: const Duration(seconds: 1),
@@ -138,9 +137,9 @@ class _SwitchDevicePageState extends State<SwitchDevicePage> {
                             widget.sensor.name,
                             style: const TextStyle(fontSize: 18),
                           ),
-                          StreamBuilder<DeviceSwitchModel>(
+                          StreamBuilder<DevicePageModel>(
                             stream: _state.dataStream$,
-                            builder: (BuildContext context, AsyncSnapshot<DeviceSwitchModel> snapshot) {
+                            builder: (BuildContext context, AsyncSnapshot<DevicePageModel> snapshot) {
                               return NetworkStatusLabel(online: _state.device.networkStatus ?? false,);
                             }
                           ),
@@ -179,10 +178,10 @@ class _SwitchDevicePageState extends State<SwitchDevicePage> {
                 ),
               ),
             ),
-            FutureBuilder<DeviceSwitchModel>(
+            FutureBuilder<DevicePageModel>(
               future: _state.getDeviceState(widget.sensor, onResult),
               builder: (BuildContext context,
-                  AsyncSnapshot<DeviceSwitchModel> snapshot) {
+                  AsyncSnapshot<DevicePageModel> snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting ||
                     snapshot.connectionState == ConnectionState.none) {
                   return const Center(
@@ -191,10 +190,10 @@ class _SwitchDevicePageState extends State<SwitchDevicePage> {
                 } else {
                   if (snapshot.hasData) {
                     return Container(
-                      child: StreamBuilder<DeviceSwitchModel>(
+                      child: StreamBuilder<DevicePageModel>(
                         stream: _state.dataStream$,
                         builder: (BuildContext context,
-                            AsyncSnapshot<DeviceSwitchModel> snapshot) {
+                            AsyncSnapshot<DevicePageModel> snapshot) {
                           return Stack(
                             children: <Widget>[
                               Align(

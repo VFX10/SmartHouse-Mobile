@@ -74,32 +74,46 @@ class _RoomState extends State<Room> {
               child: Container(
                 padding: const EdgeInsets.all(16),
                 child: Row(
-                  mainAxisSize: MainAxisSize.max,
                   children: <Widget>[
-                    RoundButton(
-                      icon: Icon(MdiIcons.chevronLeft, color: Colors.black),
-                      padding: const EdgeInsets.all(8),
-                      onPressed: () => Navigator.pop(context),
-                    ),
-                    const SizedBox(
-                      width: 10,
-                    ),
-                    Text(
-                      _state.currentRoom.name,
-                      style: const TextStyle(fontSize: 18),
-                    ),
-                    const Spacer(),
-                    RoundButton(
-                      icon: Icon(
-                        MdiIcons.pencil,
-                        color: Colors.black,
-                        size: 16,
+                    Flexible(
+                      flex: 7,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: <Widget>[
+                          RoundButton(
+                            icon: Icon(MdiIcons.chevronLeft, color: Colors.black),
+                            padding: const EdgeInsets.all(8),
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                          const SizedBox(
+                            width: 10,
+                          ),
+                          Flexible(
+                            child: Text(
+                              _state.currentRoom.name,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: const TextStyle(fontSize: 18),
+                            ),
+                          )
+
+                        ],
                       ),
-                      padding: const EdgeInsets.all(12),
-                      onPressed: () => Navigator.push(
-                        context,
-                        MaterialPageRoute<RoomEdit>(
-                          builder: (_) => RoomEdit(room: widget.room),
+                    ),
+                    Flexible(
+                      flex: 1,
+                      child: RoundButton(
+                        icon: Icon(
+                          MdiIcons.pencil,
+                          color: Colors.black,
+                          size: 16,
+                        ),
+                        padding: const EdgeInsets.all(12),
+                        onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute<RoomEdit>(
+                            builder: (_) => RoomEdit(room: widget.room),
+                          ),
                         ),
                       ),
                     ),
