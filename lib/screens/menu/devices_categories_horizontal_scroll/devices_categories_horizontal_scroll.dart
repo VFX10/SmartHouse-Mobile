@@ -1,4 +1,5 @@
 import 'package:Homey/design/widgets/device_card.dart';
+import 'package:Homey/helpers/data_types.dart';
 import 'package:Homey/screens/devices_pages/all_devices.dart';
 import 'package:Homey/screens/devices_pages/device_page.dart';
 import 'package:flutter/material.dart';
@@ -13,196 +14,116 @@ class DevicesHorizontalScroll extends StatelessWidget {
       scrollDirection: Axis.horizontal,
 //        child: Row(
       children: <Widget>[
-        AnimationConfiguration.staggeredList(
-          position: 1,
-          duration: const Duration(milliseconds: 500),
-          child: SlideAnimation(
-            verticalOffset: -115,
-            child: FadeInAnimation(
-              child: DeviceCard(
-                icon: MdiIcons.thermometer,
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute<DevicePage>(
-                      builder: (_) => const DevicePage(
-                        deviceType: 3,
-                      ),
-                    ),
-                  );
-                },
-                label: 'Temperature',
-              ),
-            ),
-          ),
-        ),
-        AnimationConfiguration.staggeredList(
-          position: 2,
-          duration: const Duration(milliseconds: 500),
-          child: SlideAnimation(
-            verticalOffset: -115,
-            child: FadeInAnimation(
-              child: DeviceCard(
-                icon: MdiIcons.weatherSunny,
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute<DevicePage>(
-                      builder: (_) => const DevicePage(
-                        deviceType: 1,
-                      ),
-                    ),
-                  );
-                },
-                label: 'UV',
-              ),
-            ),
-          ),
-        ),
-        AnimationConfiguration.staggeredList(
-          position: 3,
-          duration: const Duration(milliseconds: 500),
-          child: SlideAnimation(
-            verticalOffset: -115,
-            child: FadeInAnimation(
-              child: DeviceCard(
-                icon: MdiIcons.smokeDetector,
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute<DevicePage>(
-                      builder: (_) => const DevicePage(
-                        deviceType: 5,
-                      ),
-                    ),
-                  );
-                },
-                label: 'Smoke',
-              ),
-            ),
-          ),
-        ),
-        AnimationConfiguration.staggeredList(
-          position: 4,
-          duration: const Duration(milliseconds: 500),
-          child: SlideAnimation(
-            verticalOffset: -115,
-            child: FadeInAnimation(
-              child: DeviceCard(
-                icon: MdiIcons.themeLightDark,
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute<DevicePage>(
-                      builder: (_) => const DevicePage(
-                        deviceType: 4,
-                      ),
-                    ),
-                  );
-                },
-                label: 'Light',
-              ),
-            ),
-          ),
-        ),
-        AnimationConfiguration.staggeredList(
-          position: 5,
-          duration: const Duration(milliseconds: 500),
-          child: SlideAnimation(
-            verticalOffset: -115,
-            child: FadeInAnimation(
-              child: DeviceCard(
-                icon: MdiIcons.powerSocketEu,
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute<DevicePage>(
-                      builder: (_) => const DevicePage(
-                        deviceType: 2,
-                      ),
-                    ),
-                  );
-                },
-                label: 'Plugs',
-              ),
-            ),
-          ),
-        ),
-        AnimationConfiguration.staggeredList(
-          position: 6,
-          duration: const Duration(milliseconds: 500),
-          child: SlideAnimation(
-            verticalOffset: -115,
-            child: FadeInAnimation(
-              child: DeviceCard(
-                icon: MdiIcons.door,
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute<DevicePage>(
-                      builder: (_) => const DevicePage(
-                        deviceType: 6,
-                      ),
-                    ),
-                  );
-                },
-                label: 'Door/Window',
-              ),
-            ),
-          ),
-        ),
-        AnimationConfiguration.staggeredList(
-          position: 7,
-          duration: const Duration(milliseconds: 500),
-          child: SlideAnimation(
-            verticalOffset: -115,
-            child: FadeInAnimation(
-              child: DeviceCard(
-                icon: MdiIcons.counter,
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute<DevicePage>(
-                    builder: (_) => const DevicePage(
-                      deviceType: 7,
-                    ),
-                  ),
+        DeviceCard(
+          icon: MdiIcons.thermometer,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute<DevicePage>(
+                builder: (_) => const DevicePage(
+                  deviceType: DevicesType.temperature,
                 ),
-                label: 'Power Consumption Sensors',
               ),
-            ),
-          ),
-        ),AnimationConfiguration.staggeredList(
-          position: 8,
-          duration: const Duration(milliseconds: 500),
-          child: SlideAnimation(
-            verticalOffset: -115,
-            child: FadeInAnimation(
-              child: DeviceCard(
-                icon: MdiIcons.playSpeed,
-                onPressed: () {},
-                label: 'Scenes',
-              ),
-            ),
-          ),
+            );
+          },
+          label: 'Temperature',
         ),
-        AnimationConfiguration.staggeredList(
-          position: 9,
-          duration: const Duration(milliseconds: 500),
-          child: SlideAnimation(
-            verticalOffset: -115,
-            child: FadeInAnimation(
-              child: DeviceCard(
-                icon: MdiIcons.dotsHorizontal,
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute<DevicePage>(
-                    builder: (_) => AllDevices(),
-                  ),
+        DeviceCard(
+          icon: MdiIcons.weatherSunny,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute<DevicePage>(
+                builder: (_) => const DevicePage(
+                  deviceType: DevicesType.uv,
                 ),
-                label: 'Unassigned devices',
+              ),
+            );
+          },
+          label: 'UV',
+        ),
+        DeviceCard(
+          icon: MdiIcons.smokeDetector,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute<DevicePage>(
+                builder: (_) => const DevicePage(
+                  deviceType: DevicesType.gasAndSmoke,
+                ),
+              ),
+            );
+          },
+          label: 'Smoke',
+        ),
+        DeviceCard(
+          icon: MdiIcons.themeLightDark,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute<DevicePage>(
+                builder: (_) => const DevicePage(
+                  deviceType: DevicesType.light,
+                ),
+              ),
+            );
+          },
+          label: 'Light',
+        ),
+        DeviceCard(
+          icon: MdiIcons.powerSocketEu,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute<DevicePage>(
+                builder: (_) => const DevicePage(
+                  deviceType: DevicesType.switchDevice,
+                ),
+              ),
+            );
+          },
+          label: 'Plugs',
+        ),
+        DeviceCard(
+          icon: MdiIcons.door,
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute<DevicePage>(
+                builder: (_) => const DevicePage(
+                  deviceType: DevicesType.contact,
+                ),
+              ),
+            );
+          },
+          label: 'Door/Window',
+        ),
+        DeviceCard(
+          icon: MdiIcons.counter,
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute<DevicePage>(
+              builder: (_) => const DevicePage(
+                deviceType: DevicesType.powerConsumption,
               ),
             ),
           ),
+          label: 'Power Consumption Sensors',
+        ),
+        DeviceCard(
+          icon: MdiIcons.playSpeed,
+          onPressed: () {},
+          label: 'Scenes',
+        ),
+        DeviceCard(
+          icon: MdiIcons.dotsHorizontal,
+          onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute<DevicePage>(
+              builder: (_) => AllDevices(),
+            ),
+          ),
+          label: 'Unassigned devices',
         ),
       ],
     );

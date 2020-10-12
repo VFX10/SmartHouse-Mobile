@@ -1,4 +1,3 @@
-
 import 'package:Homey/app_data_manager.dart';
 import 'package:Homey/design/dialogs.dart';
 import 'package:Homey/design/widgets/room_list_item.dart';
@@ -9,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:Homey/helpers/states_manager.dart';
 import 'package:flutter_staggered_animations/flutter_staggered_animations.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-
 
 class RoomSelectorPage extends StatelessWidget {
   RoomSelectorPage({this.state, this.event}) : super();
@@ -45,7 +43,11 @@ class RoomSelectorPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _keyLoader,
-      floatingActionButton: FloatingActionButton.extended(onPressed: () => state.addSensor(onResult: onResult), label: const Text('Skip'), icon: Icon(MdiIcons.arrowRight),),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => state.addSensor(onResult: onResult),
+        label: const Text('Skip'),
+        icon: const Icon(MdiIcons.arrowRight),
+      ),
       body: SafeArea(
         child: AnimationLimiter(
           child: ListView.builder(
@@ -60,7 +62,8 @@ class RoomSelectorPage extends StatelessWidget {
                     _menuState.selectedHome.rooms[index],
                     selectionOnly: true,
                     onPressed: () => state.addSensor(
-                        room: _menuState.selectedHome.rooms[index], onResult: onResult),
+                        room: _menuState.selectedHome.rooms[index],
+                        onResult: onResult),
                   ),
                 ),
               );

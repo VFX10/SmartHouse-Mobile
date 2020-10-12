@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:Homey/helpers/data_types.dart';
 import 'package:Homey/helpers/sql_helper/data_models/home_model.dart';
 import 'package:Homey/helpers/sql_helper/data_models/sensor_model.dart';
 import 'package:flutter/cupertino.dart';
@@ -69,13 +70,13 @@ class SqlHelper {
               'INSERT INTO Rooms(houseId, dbId, name) VALUES ($houseId, ${room['id']}, "${room['name']}");');
           for (final Map<String, dynamic> sensor in room['sensors']) {
             await transaction.rawInsert(
-                'INSERT INTO Sensors(roomId, dbId, name, sensorType, readingFrequency, macAddress, networkStatus, data) VALUES ($roomId, ${sensor['id']}, "${sensor['name']}", "${sensor['sensorType']}",${sensor['readingFrequency']}, "${sensor['macAddress']}", "${sensor['networkStatus']}", "${sensor['data'].toString()}");');
+                'INSERT INTO Sensors(roomId, dbId, name, sensorType, readingFrequency, macAddress, networkStatus, data) VALUES ($roomId, ${sensor['id']}, "${sensor['name']}", "${int.parse(sensor['sensorType'].toString())}",${sensor['readingFrequency']}, "${sensor['macAddress']}", "${sensor['networkStatus']}", "${sensor['data'].toString()}");');
           }
         }
       }
       for (final Map<String, dynamic> device in data['unassignedSensors']) {
         await transaction.rawInsert(
-            'INSERT INTO Sensors(dbId, name, sensorType, readingFrequency, macAddress, networkStatus, data) VALUES (${device['id']}, "${device['name']}", "${device['sensorType']}",${device['readingFrequency']}, "${device['macAddress']}", "${device['networkStatus']}", "${device['data'].toString()}");');
+            'INSERT INTO Sensors(dbId, name, sensorType, readingFrequency, macAddress, networkStatus, data) VALUES (${device['id']}, "${device['name']}", "${int.parse(device['sensorType'].toString())}",${device['readingFrequency']}, "${device['macAddress']}", "${device['networkStatus']}", "${device['data'].toString()}");');
       }
     }).then((_) async {
       await AppDataManager().fetchData();
@@ -97,21 +98,25 @@ class SqlHelper {
   }
 
   Future<List<SensorModel>> getAllSensors() async {
-    final List<Map<String, dynamic>> list = await _database
-        .rawQuery('SELECT DISTINCT * FROM SENSORS ORDER BY dbId');
-    return List<SensorModel>.generate(list.length, (int i) {
-      return SensorModel(
-        id: list[i]['id'],
-        dbId: list[i]['dbId'],
-        roomId: list[i]['roomId'],
-        readingFrequency: list[i]['readingFrequency'],
-        ipAddress: list[i]['ipAddress'],
-        macAddress: list[i]['macAddress'],
-        sensorType: list[i]['sensorType'],
-        networkStatus: list[i]['networkStatus'] == 'true',
-        name: list[i]['name'],
-      );
-    });
+    try {
+      final List<Map<String, dynamic>> list = await _database
+          .rawQuery('SELECT DISTINCT * FROM SENSORS ORDER BY dbId');
+      return List<SensorModel>.generate(list.length, (int i) {
+        return SensorModel(
+          id: list[i]['id'],
+          dbId: list[i]['dbId'],
+          roomId: list[i]['roomId'],
+          readingFrequency: list[i]['readingFrequency'],
+          ipAddress: list[i]['ipAddress'],
+          macAddress: list[i]['macAddress'],
+          sensorType: DevicesType.values[list[i]['sensorType']],
+          networkStatus: list[i]['networkStatus'] == 'true',
+          name: list[i]['name'],
+        );
+      });
+    } catch (e) {
+      log('error', error: e);
+    }
   }
 
   Future<bool> getSwitchLastStatus(int roomId) async {
@@ -147,7 +152,7 @@ class SqlHelper {
 
   Future<void> addSensor(SensorModel sensor) async {
     await _database.rawInsert(
-        'INSERT INTO Sensors(roomId, dbId, name, sensorType, ipAddress, macAddress) VALUES (${sensor.roomId}, ${sensor.dbId}, "${sensor.name}", "${sensor.sensorType}", "${sensor.ipAddress}", "${sensor.macAddress}");');
+        'INSERT INTO Sensors(roomId, dbId, name, sensorType, ipAddress, macAddress) VALUES (${sensor.roomId}, ${sensor.dbId}, "${sensor.name}", "${sensor.sensorType.index}", "${sensor.ipAddress}", "${sensor.macAddress}");');
   }
 
   Future<void> addSensorsToRoom(int roomId, List<SensorModel> devices) async {
@@ -162,11 +167,10 @@ class SqlHelper {
 
   Future<void> updateSensor(SensorModel sensor) async {
     await _database.rawUpdate(
-        'UPDATE Sensors SET roomId = ${sensor.roomId}, dbId = ${sensor.dbId}, name = "${sensor.name}", sensorType = ${sensor.sensorType}, ipAddress = "${sensor.ipAddress}", networkStatus = "${sensor.networkStatus}", readingFrequency = ${sensor.readingFrequency} WHERE macAddress = "${sensor.macAddress}";');
+        'UPDATE Sensors SET roomId = ${sensor.roomId}, dbId = ${sensor.dbId}, name = "${sensor.name}", sensorType = ${sensor.sensorType.index}, ipAddress = "${sensor.ipAddress}", networkStatus = "${sensor.networkStatus}", readingFrequency = ${sensor.readingFrequency} WHERE macAddress = "${sensor.macAddress}";');
   }
 
   Future<void> updateSensorData(String data, String macAddress) async {
-
     try {
       await _database.rawUpdate(
           'UPDATE Sensors SET data = "$data" WHERE macAddress = "$macAddress";');
@@ -260,6 +264,7 @@ class SqlHelper {
             'WHERE h.id = $homeId '
             'ORDER BY s.sensorType');
 //    log('gggg', error: sensors.toString());
+//    log('list', error: list.toString());
     if (list.isEmpty) {
       return null;
     }
@@ -274,6 +279,7 @@ class SqlHelper {
               .where((Map<String, dynamic> sensor) =>
                   sensor['roomId'] == rooms[i]['id'])
               .toList();
+//          log('tst', error:DevicesType.values[sortedSensors[i]['sensorType']]);
           return RoomModel(
               id: rooms[i]['id'],
               houseId: homeId,
@@ -282,13 +288,14 @@ class SqlHelper {
               sensors:
                   List<SensorModel>.generate(sortedSensors.length, (int j) {
                 return SensorModel(
-                    id: sortedSensors[j]['id'],
-                    dbId: sortedSensors[j]['dbId'],
-                    roomId: sortedSensors[j]['roomId'],
-                    name: sortedSensors[j]['name'],
-                    macAddress: sortedSensors[j]['macAddress'],
-                    networkStatus: sortedSensors[j]['networkStatus'] == 'true',
-                    sensorType: sortedSensors[j]['sensorType']);
+                  id: sortedSensors[j]['id'],
+                  dbId: sortedSensors[j]['dbId'],
+                  roomId: sortedSensors[j]['roomId'],
+                  name: sortedSensors[j]['name'],
+                  macAddress: sortedSensors[j]['macAddress'],
+                  networkStatus: sortedSensors[j]['networkStatus'] == 'true',
+                  sensorType: DevicesType.values[sortedSensors[j]['sensorType']],
+                ); // sortedSensors[j]['sensorType']);
               }));
         }));
 //    log(home.toMap().toString());

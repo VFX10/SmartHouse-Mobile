@@ -52,11 +52,14 @@ class _DeviceInfoState extends State<DeviceInfo> {
                 children: <Widget>[
                   Icon(
                     DataTypes.sensorsType[widget.sensor.sensorType]['icon'],
-                    size: 100,
+                    size: 50, 
                   ),
-                  Text(
-                    widget.sensor.name,
-                    style: const TextStyle(fontSize: 35),
+                  Flexible(
+                    child: Text(
+                      widget.sensor.name,
+                      overflow: TextOverflow.ellipsis,
+                      style: const TextStyle(fontSize: 25),
+                    ),
                   ),
                 ],
               ),
@@ -135,7 +138,7 @@ class _DeviceInfoState extends State<DeviceInfo> {
                                   width: 10,
                                 ),
                                 Text(
-                                  widget.sensor.macAddress ??
+                                  widget.sensor.macAddress.toUpperCase() ??
                                       'Cannot get MAC Address',
                                   style: TextStyle(
                                       color: widget.sensor.macAddress == null

@@ -1,4 +1,6 @@
 
+import 'dart:developer';
+
 import 'package:Homey/design/colors.dart';
 import 'package:Homey/design/dialogs.dart';
 import 'package:Homey/design/widgets/buttons/round_button.dart';
@@ -188,6 +190,7 @@ class _SwitchDevicePageState extends State<SwitchDevicePage> {
                     child: CircularProgressIndicator(),
                   );
                 } else {
+                  log('snapshot', error: snapshot);
                   if (snapshot.hasData) {
                     return Container(
                       child: StreamBuilder<DevicePageModel>(

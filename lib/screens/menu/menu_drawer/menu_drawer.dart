@@ -61,7 +61,7 @@ class MenuDrawer extends StatelessWidget {
                                   children: <Widget>[
                                     Text(
                                       AppDataManager().userData.firstName.substring(0,1).toUpperCase(),
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           fontWeight: FontWeight.bold,
                                           color: ColorsTheme.accent,
                                           fontSize: 20),
@@ -91,7 +91,7 @@ class MenuDrawer extends StatelessWidget {
                                 children: <Widget>[
                                   Text(
                                     AppDataManager().userData.firstName,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 20),
                                   ),
@@ -129,7 +129,7 @@ class MenuDrawer extends StatelessWidget {
                     height: 10,
                   ),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    padding: const EdgeInsets.symmetric(horizontal: 20,vertical: 10),
                     decoration: const BoxDecoration(
                       borderRadius: BorderRadius.all(
                         Radius.circular(25),
@@ -181,12 +181,12 @@ class MenuDrawer extends StatelessWidget {
                           vertical: 11, horizontal: 16),
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[
+                          children: const <Widget>[
                             Flexible(
                               flex: 2,
                               child: Icon(MdiIcons.tune,),
                             ),
-                            const Expanded(
+                             Expanded(
                               flex: 8,
                               child:  Text(
                                 'Home management',

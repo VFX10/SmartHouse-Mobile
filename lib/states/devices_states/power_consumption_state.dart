@@ -11,7 +11,7 @@ import 'package:rxdart/rxdart.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/date_symbol_data_local.dart';
 
-import '../on_result_callback.dart';
+import 'package:Homey/states/on_result_callback.dart';
 
 enum ChartTypes { weekly, monthly, yearly }
 

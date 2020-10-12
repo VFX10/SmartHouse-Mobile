@@ -1,5 +1,5 @@
-import 'dart:developer';
 
+import 'package:Homey/helpers/request_permissions.dart';
 import 'package:Homey/models/add_house_model.dart';
 import 'package:Homey/screens/add_house/pages/check_location/check_location.dart';
 import 'package:Homey/screens/add_house/pages/first_page/first_page.dart';
@@ -16,28 +16,21 @@ import 'package:Homey/helpers/states_manager.dart';
 class AddHouse extends StatelessWidget {
   AddHouse({Key key}) : super(key: key);
   final PageController controller = PageController();
-  final PermissionHandler _permissionHandler = PermissionHandler();
   final AddHouseState _state = getIt.get<AddHouseState>();
   final GlobalKey<State> _keyLoader = GlobalKey<State>();
 
   Future<void> requestsPermissions() async {
-    final Map<PermissionGroup, PermissionStatus> permissionStatus =
-        await _permissionHandler.requestPermissions(<PermissionGroup>[
-      PermissionGroup.location,
-      PermissionGroup.locationAlways,
-      PermissionGroup.locationWhenInUse,
+    final Map<Permission, PermissionStatus> result = await RequestPermissions.requestPermissionsFor(<Permission>[
+      Permission.location,
+      Permission.locationAlways,
+      Permission.locationWhenInUse,
     ]);
-    log('location', error: permissionStatus[PermissionGroup.location]);
-    log('locationAlways',
-        error: permissionStatus[PermissionGroup.locationAlways]);
-    log('locationWhenInUse',
-        error: permissionStatus[PermissionGroup.locationWhenInUse]);
     _state.isLocationAutoDetectionEnabled =
-        permissionStatus[PermissionGroup.location] ==
+        result[Permission.location] ==
                 PermissionStatus.granted ||
-            permissionStatus[PermissionGroup.locationAlways] ==
+            result[Permission.locationAlways] ==
                 PermissionStatus.granted ||
-            permissionStatus[PermissionGroup.locationWhenInUse] ==
+            result[Permission.locationWhenInUse] ==
                 PermissionStatus.granted;
     next();
   }

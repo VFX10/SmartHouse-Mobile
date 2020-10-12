@@ -11,38 +11,44 @@ class EmptyListItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: AspectRatio(
-        aspectRatio: 21 / 9,
-        child: Card(
-          elevation: 10,
-          color: ColorsTheme.backgroundCard,
-          child: InkWell(
-            splashColor: ColorsTheme.backgroundDarker,
-            onTap: onPressed,
-            child: Container(
-              padding: const EdgeInsets.all(16),
-              child: Stack(
-                children: <Widget>[
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      title,
-                      style: const TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white),
+    return
+      FittedBox(
+        fit: BoxFit.contain,
+      alignment: Alignment.topCenter,
+      child: SizedBox(
+        height: 170,
+        child: AspectRatio(
+          aspectRatio: 21 / 9,
+          child: Card(
+            elevation: 0,
+            color: ColorsTheme.backgroundCard,
+            child: InkWell(
+              splashColor: ColorsTheme.backgroundDarker,
+              onTap: onPressed,
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                child: Stack(
+                  children: <Widget>[
+                    Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        title,
+                        style: const TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white),
+                      ),
                     ),
-                  ),
-                  Align(
-                    alignment: Alignment.centerRight,
-                    child: Icon(
-                      icon,
-                      size: 50,
-                      color: ColorsTheme.background,
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: Icon(
+                        icon,
+                        size: 50,
+                        color: ColorsTheme.background,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ),

@@ -1,52 +1,63 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
+enum DevicesType {
+  undefined,
+  uv,
+  switchDevice,
+  temperature,
+  light,
+  gasAndSmoke,
+  contact,
+  powerConsumption,
+}
+
 class DataTypes {
   const DataTypes();
 
-  static Map<int, Map<String, dynamic>> sensorsType =
-      <int, Map<String, dynamic>>{
-    0: <String, dynamic>{
+  static const  Map<DevicesType, Map<String, dynamic>> sensorsType =
+      <DevicesType, Map<String, dynamic>>{
+    DevicesType.undefined: <String, dynamic>{
       'text': 'Undefined device',
       'title': 'Undefined devices',
     },
-    1: <String, dynamic>{
+    DevicesType.uv: <String, dynamic>{
       'text': 'UV Sensor',
       'title': 'UV Sensors',
       'icon': MdiIcons.weatherSunny,
     },
-    2: <String, dynamic>{
+    DevicesType.switchDevice: <String, dynamic>{
       'text': 'Switch',
       'title': 'Switches',
       'icon': MdiIcons.powerSocketEu,
     },
-    3: <String, dynamic>{
+    DevicesType.temperature: <String, dynamic>{
       'text': 'Temperature and Humidity Sensor',
       'title': 'Temperature and humidity Sensors',
       'icon': MdiIcons.thermometer,
     },
-    4: <String, dynamic>{
+    DevicesType.light: <String, dynamic>{
       'text': 'Light Sensor',
       'title': 'Light Sensors',
       'icon': MdiIcons.themeLightDark,
     },
-    5: <String, dynamic>{
+    DevicesType.gasAndSmoke: <String, dynamic>{
       'text': 'Gas and Smoke Detector',
       'title': 'Gas and Smoke Detectors',
       'icon': MdiIcons.smokeDetector,
     },
-    6: <String, dynamic>{
+    DevicesType.contact: <String, dynamic>{
       'text': 'Contact Sensor',
       'title': 'Contact Sensors',
       'icon': MdiIcons.doorOpen,
     },
-    7: <String, dynamic>{
+    DevicesType.powerConsumption: <String, dynamic>{
       'text': 'Power consumption Sensor',
       'title': 'Power consumption Sensors',
       'icon': MdiIcons.counter,
-    }
+    },
   };
-  static List<Map<String, dynamic>> uvLevelsText = <Map<String, dynamic>>[
+  static final List<Map<String, dynamic>> uvLevelsText = <Map<String, dynamic>>[
     <String, dynamic>{
       'label': '0-2',
       'text': 'low',
@@ -61,7 +72,8 @@ class DataTypes {
       'color': const Color(0xFF93483D),
       'selectedColor': const Color(0xFFEAD485),
       'dotColor': const Color(0xFFEAD485),
-      'details': 'Take precautions - wear sunscreen, sunhat, sunglasses, seek shade during peak hours of 11 am to 4 pm',
+      'details':
+          'Take precautions - wear sunscreen, sunhat, sunglasses, seek shade during peak hours of 11 am to 4 pm',
     },
     <String, dynamic>{
       'label': '6-7',
@@ -77,7 +89,8 @@ class DataTypes {
       'color': Colors.deepPurple.shade900,
       'selectedColor': const Color(0xFF6F6DE8),
       'dotColor': const Color(0xFF6F6DE8),
-      'details': 'Seek shade - wear sun protective clothing, sun screen and sunglasses.',
+      'details':
+          'Seek shade - wear sun protective clothing, sun screen and sunglasses.',
     },
     <String, dynamic>{
       'label': '11+',
@@ -85,7 +98,8 @@ class DataTypes {
       'color': Colors.red.shade900,
       'selectedColor': const Color(0xFFF86F7E),
       'dotColor': const Color(0xFFF86F7E),
-      'details': 'Take full precaution. Unprotected skin can burn in minutes. Wear sunscreen and sun protective clothing.',
+      'details':
+          'Take full precaution. Unprotected skin can burn in minutes. Wear sunscreen and sun protective clothing.',
     },
   ];
 }

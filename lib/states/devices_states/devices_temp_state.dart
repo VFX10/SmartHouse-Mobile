@@ -1,3 +1,4 @@
+import 'package:Homey/helpers/data_types.dart';
 import 'package:Homey/helpers/sql_helper/data_models/sensor_model.dart';
 import 'package:Homey/helpers/sql_helper/sql_helper.dart';
 import 'package:Homey/helpers/web_requests_helpers/web_requests_helpers.dart';
@@ -7,7 +8,7 @@ import 'package:rxdart/rxdart.dart';
 
 class DeviceTempState {
   final BehaviorSubject<DevicePageModel> _data =
-      BehaviorSubject<DevicePageModel>.seeded(DevicePageModel());
+      BehaviorSubject<DevicePageModel>.seeded(DevicePageModel(data: <String, dynamic>{'UVIndex': 0}));
   final BehaviorSubject<double> _animationValue =
       BehaviorSubject<double>.seeded(0.0);
 
@@ -29,6 +30,7 @@ class DeviceTempState {
 
   Future<DevicePageModel> getDeviceState(
       SensorModel sensor, OnResult onResult) async {
+    onResult('Loading', ResultState.loading);
     await WebRequestsHelpers.get(
       route: '/api/getSensorLastStatus?macAddress=${sensor.macAddress}',
     ).then((dynamic response) async {
@@ -69,7 +71,7 @@ class DeviceTempState {
     });
   }
   Future<void> changeStateOn(SensorModel sensor, OnResult onResult) async {
-    if(sensor.sensorType == 2) {
+    if(sensor.sensorType == DevicesType.switchDevice) {
       final Map<String, dynamic> body = <String, String>{
         'macAddress': sensor.macAddress,
         'event': _data.value.data['status'] == 0 ? 'on' : 'off'

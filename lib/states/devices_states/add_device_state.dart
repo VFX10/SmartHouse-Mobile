@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:Homey/app_data_manager.dart';
+import 'package:Homey/helpers/data_types.dart';
 
 import 'package:Homey/helpers/sql_helper/data_models/room_model.dart';
 import 'package:Homey/helpers/sql_helper/data_models/sensor_model.dart';
@@ -71,7 +72,7 @@ class AddDeviceState {
     _networkConfigPassword.value = !_networkConfigPassword.value;
   }
 
-  Future<void> addDevice({@required AddHouseModel model}) async {
+  Future<void> addDevice({@required AddDeviceModel model}) async {
     model.onResult('Loading...', ResultState.loading);
     log('data', error: model.toMap());
     await WebRequestsHelpers.post(route: '/api/add/sensor', body: model.toMap())
@@ -88,7 +89,7 @@ class AddDeviceState {
   }
 
   Future<void> startESPTouchConfiguration(
-      {@required NetworkConfigModel networkConfigModel}) async {
+      {@required NetworkConfigModel networkConfigModel, OnResult event}) async {
     log('model', error: networkConfigModel.toMap());
     networkConfigModel.onResult('Configuring sensor...', ResultState.loading);
     await Smartconfig.start(networkConfigModel.networkSSID,
@@ -99,21 +100,26 @@ class AddDeviceState {
         networkConfigModel.onResult(
             'Error configuring sensor', ResultState.error);
       } else {
+        final String ip = onValue.values.toList()[0];
         await WebRequestsHelpers.get(
-                domain: 'http://${onValue.values.toList()[0]}',
-                route: '/api/getConfig/')
+                domain: 'http://$ip', route: '/api/getConfig/')
             .then((dynamic response) {
           final dynamic res = response.json();
+          log(res.toString());
           _deviceConfig.value.networkPassword =
               networkConfigModel.networkPassword;
+          log(_deviceConfig.value.networkPassword.toString());
           _deviceConfig.value.networkSSID = networkConfigModel.networkSSID;
+          log(_deviceConfig.value.networkSSID.toString());
           _deviceConfig.value.sensor = SensorModel(
             name: res['sensorName'],
-            sensorType: res['sensorType'],
+            sensorType: DevicesType.values[res['sensorType']],
             macAddress: res['macAddress'],
             readingFrequency: res['freqMinutes'],
-            ipAddress: onValue.values.toList()[0],
+            ipAddress: ip,
           );
+          log('ceva');
+          log(_deviceConfig.value.sensor.toMap().toString());
           networkConfigModel.onResult(
               'Device configured', ResultState.successful);
         }, onError: (Object e) {
@@ -153,7 +159,7 @@ class AddDeviceState {
       'sensorName': _deviceConfig.value.sensor.name,
       'roomId': room == null ? null : room.dbId,
       'macAddress': _deviceConfig.value.sensor.macAddress,
-      'sensorType': _deviceConfig.value.sensor.sensorType,
+      'sensorType': _deviceConfig.value.sensor.sensorType.index,
       'readingFrequency': _deviceConfig.value.sensor.readingFrequency,
       'userEmail': AppDataManager().userData.email,
     };
@@ -168,11 +174,12 @@ class AddDeviceState {
             roomId: room == null ? null : room.id,
             dbId: data['sensor']['id'],
             macAddress: data['sensor']['macAddress'],
-            sensorType: data['sensor']['sensorType'],
+            sensorType: DevicesType.values[data['sensor']['sensorType']],
             networkStatus: true,
             readingFrequency: data['sensor']['readingFrequency'],
             ipAddress: _deviceConfig.value.sensor.ipAddress));
-        await AppDataManager().changeDefaultHome(AppDataManager().defaultHome.id);
+        await AppDataManager()
+            .changeDefaultHome(AppDataManager().defaultHome.id);
         onResult('Device added successfuly', ResultState.successful);
 //            Navigator.pop(context);
       } else {

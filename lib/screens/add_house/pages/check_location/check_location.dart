@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:Homey/helpers/request_permissions.dart';
 import 'package:Homey/screens/add_house/pages/first_setup_template/first_setup_template_page.dart';
 import 'package:Homey/states/add_house_state.dart';
 import 'package:flutter/material.dart';
@@ -45,34 +46,22 @@ class _CheckLocationState extends State<CheckLocation>
   }
 
   Position _currentPosition;
-  final PermissionHandler _permissionHandler = PermissionHandler();
-
   Future<List<Placemark>> getPlaceMark() async {
-    final GeolocationStatus permission =
-        await Geolocator().checkGeolocationPermissionStatus();
-    if (permission == GeolocationStatus.denied) {
-      await _permissionHandler.requestPermissions(<PermissionGroup>[
-        PermissionGroup.location,
-        PermissionGroup.locationAlways,
-        PermissionGroup.locationWhenInUse,
-      ]);
-      if (await _permissionHandler
-                  .checkPermissionStatus(PermissionGroup.locationWhenInUse) ==
-              PermissionStatus.denied ||
-          await _permissionHandler
-                  .checkPermissionStatus(PermissionGroup.locationAlways) ==
-              PermissionStatus.denied ||
-          await _permissionHandler
-                  .checkPermissionStatus(PermissionGroup.location) ==
-              PermissionStatus.denied) {
-        throw ArgumentError('Location permissions denied');
-      }
-    } else {
+    final Map<Permission, PermissionStatus> result =
+        await RequestPermissions.requestPermissionsFor(<Permission>[
+      Permission.location,
+      Permission.locationAlways,
+      Permission.locationWhenInUse,
+    ]);
+    if (result[Permission.location] == PermissionStatus.granted ||
+        result[Permission.locationAlways] == PermissionStatus.granted ||
+        result[Permission.locationWhenInUse] == PermissionStatus.granted) {
       _currentPosition = await Geolocator().getCurrentPosition(
           desiredAccuracy: LocationAccuracy.bestForNavigation);
       return Geolocator().placemarkFromPosition(_currentPosition);
+    } else {
+      throw ArgumentError('Location permissions denied');
     }
-    throw ArgumentError('Unknown error has occured');
   }
 
   bool location = true;

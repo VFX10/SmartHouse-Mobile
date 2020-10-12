@@ -147,11 +147,11 @@ class _RoomState extends State<Room> {
                         onPressed: () {
                           switch (
                               _state.currentRoom.sensors[index].sensorType) {
-                            case 0:
+                            case DevicesType.undefined:
                               break;
-                            case 1:
+                            case DevicesType.uv:
                               break;
-                            case 2:
+                            case DevicesType.switchDevice:
                               Navigator.push<SwitchDevicePage>(
                                 context,
                                 MaterialPageRoute<SwitchDevicePage>(
@@ -161,7 +161,7 @@ class _RoomState extends State<Room> {
                                 ),
                               );
                               break;
-                            case 3:
+                            case DevicesType.temperature:
                               Navigator.push<TempDevicePage>(
                                 context,
                                 MaterialPageRoute<TempDevicePage>(
@@ -170,6 +170,14 @@ class _RoomState extends State<Room> {
                                   ),
                                 ),
                               );
+                              break;
+                            case DevicesType.light:
+                              break;
+                            case DevicesType.gasAndSmoke:
+                              break;
+                            case DevicesType.contact:
+                              break;
+                            case DevicesType.powerConsumption:
                               break;
                           }
                         },

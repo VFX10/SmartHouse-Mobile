@@ -60,10 +60,10 @@ class _AddDeviceState extends State<AddDevice> {
             alignment: Alignment.bottomCenter,
             child: FractionallySizedBox(
               heightFactor: 0.89,
-              child: FutureBuilder<Map<PermissionGroup, PermissionStatus>>(
+              child: FutureBuilder<Map<Permission, PermissionStatus>>(
                 future: _networkState.getConnectivityType(),
                 builder: (BuildContext context,
-                    AsyncSnapshot<Map<PermissionGroup, PermissionStatus>>
+                    AsyncSnapshot<Map<Permission, PermissionStatus>>
                         snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting ||
                       snapshot.connectionState == ConnectionState.none) {
@@ -94,9 +94,9 @@ class _AddDeviceState extends State<AddDevice> {
                     );
                   } else {
                     if (snapshot.hasData &&
-                        (snapshot.data[PermissionGroup.location] ==
+                        (snapshot.data[Permission.location] ==
                                 PermissionStatus.granted ||
-                            snapshot.data[PermissionGroup.locationWhenInUse] ==
+                            snapshot.data[Permission.locationWhenInUse] ==
                                 PermissionStatus.granted)) {
                       return PageView(
                         controller: controller,

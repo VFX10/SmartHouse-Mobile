@@ -2,6 +2,7 @@ import 'package:Homey/app_data_manager.dart';
 import 'package:Homey/design/widgets/buttons/round_button.dart';
 import 'package:Homey/design/widgets/device_list_item.dart';
 import 'package:Homey/design/widgets/empty_list_card.dart';
+import 'package:Homey/helpers/data_types.dart';
 import 'package:Homey/helpers/sql_helper/data_models/sensor_model.dart';
 import 'package:Homey/screens/add_device/add_device_page.dart';
 import 'package:Homey/screens/devices_pages/devices_types/temp_device_page.dart';
@@ -70,23 +71,31 @@ class AllDevices extends StatelessWidget {
                         sensor: sensor,
                         onPressed: () {
                           switch (sensor.sensorType) {
-                            case 0:
+                            case DevicesType.undefined:
                               break;
-                            case 1:
+                            case DevicesType.uv:
                               break;
-                            case 2:
+                            case DevicesType.switchDevice:
                               Navigator.push<SwitchDevicePage>(
                                   context,
                                   MaterialPageRoute<SwitchDevicePage>(
                                       builder: (_) =>
                                           SwitchDevicePage(sensor: sensor)));
                               break;
-                            case 3:
+                            case DevicesType.temperature:
                               Navigator.push<TempDevicePage>(
                                   context,
                                   MaterialPageRoute<TempDevicePage>(
                                       builder: (_) =>
                                           TempDevicePage(sensor: sensor)));
+                              break;
+                            case DevicesType.light:
+                              break;
+                            case DevicesType.gasAndSmoke:
+                              break;
+                            case DevicesType.contact:
+                              break;
+                            case DevicesType.powerConsumption:
                               break;
                           }
                         },

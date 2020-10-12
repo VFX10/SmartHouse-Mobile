@@ -1,3 +1,4 @@
+
 import 'package:Homey/design/colors.dart';
 import 'package:Homey/design/widgets/network_status.dart';
 import 'package:Homey/helpers/data_types.dart';
@@ -21,8 +22,6 @@ class DeviceListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       clipBehavior: Clip.hardEdge,
-      elevation: 20,
-      color: ColorsTheme.backgroundCard,
       child: InkWell(
         splashColor: ColorsTheme.backgroundDarker,
         onTap: onPressed,
@@ -49,7 +48,7 @@ class DeviceListItem extends StatelessWidget {
               Positioned.fill(
                 child: Container(
                   color: ColorsTheme.backgroundDarker.withOpacity(0.6),
-                  child: Center(
+                  child: const Center(
                     child: Icon(MdiIcons.check),
                   ),
                 ),

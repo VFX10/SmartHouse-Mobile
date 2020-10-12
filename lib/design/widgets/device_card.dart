@@ -32,7 +32,7 @@ class DeviceCard extends StatelessWidget {
                   child: AspectRatio(
                     aspectRatio: 1,
                     child: Card(
-                      elevation: 10,
+                      elevation: 0,
                       color: ColorsTheme.backgroundCard,
                       child: InkWell(
                         onTap: onPressed,
@@ -73,7 +73,7 @@ class DeviceCard extends StatelessWidget {
         child: AspectRatio(
           aspectRatio: 1 / 1,
           child: Card(
-            elevation: 10,
+            elevation: 0,
             color: Colors.white,
             child: InkWell(
               onTap: onPressed,

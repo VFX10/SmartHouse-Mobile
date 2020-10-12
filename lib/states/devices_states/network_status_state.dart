@@ -21,14 +21,14 @@ class NetworkStatusState {
     _connectionType.value = result;
   }
 
-  Future<Map<PermissionGroup, PermissionStatus>> getConnectivityType() async {
-    final Map<PermissionGroup, PermissionStatus> result =
-        await RequestPermissions.requestPermissionsFor(<PermissionGroup>[
-      PermissionGroup.location,
-      PermissionGroup.locationWhenInUse,
+  Future<Map<Permission, PermissionStatus>> getConnectivityType() async {
+    final Map<Permission, PermissionStatus> result =
+        await RequestPermissions.requestPermissionsFor(<Permission>[
+          Permission.location,
+          Permission.locationWhenInUse,
     ]);
-    if (result[PermissionGroup.location] == PermissionStatus.granted ||
-        result[PermissionGroup.locationWhenInUse] == PermissionStatus.granted) {
+    if (result[Permission.location] == PermissionStatus.granted ||
+        result[Permission.locationWhenInUse] == PermissionStatus.granted) {
       _connectionType.value = await Connectivity().checkConnectivity();
     }
     return result;

@@ -1,4 +1,6 @@
 
+import 'dart:developer';
+
 import 'package:Homey/design/dialogs.dart';
 import 'package:Homey/design/widgets/buttons/round_rectangle_button.dart';
 import 'package:Homey/helpers/forms_helpers/form_validations.dart';
@@ -36,6 +38,7 @@ class EspTouchConfigPage extends StatelessWidget {
     } else if (data is String) {
       switch (resultState) {
         case ResultState.successful:
+          log('Success', error: 'trebuie redirect');
           if (Navigator.canPop(_keyLoader.currentContext)) {
             Navigator.pop(_keyLoader.currentContext);
           }
@@ -62,7 +65,7 @@ class EspTouchConfigPage extends StatelessWidget {
               networkSSID: state.networkConfig.networkSSID,
               networkBSSID: state.networkConfig.networkBSSID,
               networkPassword: passwordController.text,
-              onResult: onResult));
+              onResult: onResult), event: onResult);
     } else {
       state.networkConfigAutoValidate = true;
     }

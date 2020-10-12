@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 
 import 'package:Homey/helpers/firebase.dart';
 import 'package:Homey/helpers/states_manager.dart';
@@ -38,7 +39,7 @@ class MyApp extends StatelessWidget {
         primaryColor: ColorsTheme.primary,
         buttonColor: ColorsTheme.primary,
         brightness: Brightness.dark,
-        textTheme: const TextTheme(body1: TextStyle()).apply(
+        textTheme: const TextTheme(bodyText2: TextStyle()).apply(
           bodyColor: ColorsTheme.textColor,
         ),
         iconTheme: const IconThemeData(
@@ -59,6 +60,7 @@ class MyApp extends StatelessWidget {
             return data;
           }),
           builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+            log('main',error: snapshot);
             if (snapshot.connectionState == ConnectionState.waiting ||
                 snapshot.connectionState == ConnectionState.none) {
               return Center(

@@ -5,8 +5,8 @@ import 'package:requests/requests.dart';
 
 class WebRequestsHelpers {
   @protected
-  static const String _domain = 'http://192.168.0.118:8000';
-//  static const String _domain = 'http://192.168.101.129:8000';
+//  static const String _domain = 'http://192.168.0.118:8000';
+  static const String _domain = 'http://192.168.100.129:8000';
 
 //  static const String DOMAIN = 'http://192.168.1.122:8000';
 
@@ -42,7 +42,7 @@ class WebRequestsHelpers {
       {@required String route,
       @required Map<dynamic, dynamic> body,
       String domain = _domain,
-      bool displayResponse = false}) async {
+      bool displayResponse = true}) async {
     assert(route != null, 'route argument is required');
     assert(route != null, 'body argument is required');
     // SharedPreferences prefs = await SharedPreferences.getInstance();

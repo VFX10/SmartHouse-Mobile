@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:Homey/helpers/data_types.dart';
 import 'package:Homey/helpers/sql_helper/data_models/sensor_model.dart';
 import 'package:Homey/helpers/sql_helper/sql_helper.dart';
 import 'package:Homey/helpers/states_manager.dart';
@@ -15,7 +16,8 @@ class MqttHelper {
   MqttHelper({this.sensor});
 
   SensorModel sensor;
-  String broker = '192.168.0.118';
+  String broker = '192.168.100.129';
+//  String broker = '192.168.0.118';
   int port = 1883;
   String username = 'matteo';
   String password = '1234';
@@ -32,7 +34,7 @@ class MqttHelper {
       ..keepAlivePeriod = 30;
 
     final MqttConnectMessage connMess = MqttConnectMessage()
-        .withClientIdentifier('{"name": "test@test.ro"}')
+        .withClientIdentifier('{"name": "voicubabiciu@gmail.com"}')
         .keepAliveFor(
             60 * 5) // Must agree with the keep alive set above or not set
         .startClean() // Non persistent session for testing
@@ -81,23 +83,25 @@ class MqttHelper {
     log('onSensorDataChanged', error: payload);
     await SqlHelper().updateSensorData(payload['data'].toString(),
         payload['macAddress'].toString().toLowerCase());
+    log('mqtt', error: sensor.sensorType);
     if (sensor != null &&
         sensor.macAddress.toLowerCase() ==
             payload['macAddress'].toString().toLowerCase()) {
       switch (sensor.sensorType) {
-        case 1:
-        case 2:
-        case 3:
-        case 4:
-        case 5:
-        case 6:
+        case DevicesType.undefined:
+        case DevicesType.uv:
+        case DevicesType.switchDevice:
+        case DevicesType.temperature:
+        case DevicesType.light:
+        case DevicesType.gasAndSmoke:
+        case DevicesType.contact:
           final DeviceTempState _state = getIt.get<DeviceTempState>();
           _state.device = DevicePageModel(
               name: _state.device.name,
               networkStatus: _state.device.networkStatus,
               data: payload['data']);
           break;
-        case 7:
+        case DevicesType.powerConsumption:
           final PowerConsumptionState _state =
               getIt.get<PowerConsumptionState>();
           _state.device = DevicePageModel(
@@ -119,12 +123,13 @@ class MqttHelper {
         sensor.macAddress.toLowerCase() ==
             jsonDecode(payload['client'])['name'].toString().toLowerCase()) {
       switch (sensor.sensorType) {
-        case 1:
-        case 2:
-        case 3:
-        case 4:
-        case 5:
-        case 6:
+        case DevicesType.undefined:
+        case DevicesType.uv:
+        case DevicesType.switchDevice:
+        case DevicesType.temperature:
+        case DevicesType.light:
+        case DevicesType.gasAndSmoke:
+        case DevicesType.contact:
           final DeviceTempState _state = getIt.get<DeviceTempState>();
           _state.device = DevicePageModel(
             name: _state.device.name,
@@ -132,7 +137,7 @@ class MqttHelper {
             data: _state.device.data,
           );
           break;
-        case 7:
+        case DevicesType.powerConsumption:
           final PowerConsumptionState _state =
               getIt.get<PowerConsumptionState>();
           _state.device = DevicePageModel(

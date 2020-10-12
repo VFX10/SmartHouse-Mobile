@@ -63,7 +63,7 @@ class Menu extends StatelessWidget {
           children: <Widget>[
             Container(
               height: Utils.getPercentValueFromScreenHeight(20, context),
-              child: AnimationLimiter(child: DevicesHorizontalScroll()),
+              child: DevicesHorizontalScroll(),
             ),
             Expanded(
               flex: 8,
@@ -71,52 +71,63 @@ class Menu extends StatelessWidget {
                 stream: state.selectedHomeStream$,
                 builder:
                     (BuildContext context, AsyncSnapshot<HomeModel> snapshot) {
-                  return AnimationLimiter(
-                    child: ListView.builder(
-                      physics: const BouncingScrollPhysics(),
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 16,
-                      ),
-                      itemBuilder: (BuildContext context, int index) {
-                        if (state.selectedHome.rooms.isEmpty) {
-                          return EmptyListItem(
-                            title: 'You don\'t have any room.\nAdd one now',
-                            onPressed: () => Navigator.push<RoomName>(
-                              context,
-                              MaterialPageRoute<RoomName>(
-                                builder: (_) => RoomName(),
-                              ),
-                            ),
-                            icon: MdiIcons.help,
-                          );
-                        } else {
-                          return AnimationConfiguration.staggeredList(
-                            position: index,
-                            duration: const Duration(milliseconds: 700),
-                            delay: const Duration(milliseconds: 100),
-                            child: FadeInAnimation(
-                              child: RoomListItem(
-                                state.selectedHome.rooms[index],
-                                onPressed: () {
-                                  Navigator.push<Room>(
-                                    context,
-                                    MaterialPageRoute<Room>(
-                                      builder: (_) => Room(
-                                        state.selectedHome.rooms[index],
-                                      ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ),
-                          );
-                        }
-                      },
-                      itemCount: state.selectedHome.rooms.isEmpty
-                          ? 1
-                          : state.selectedHome.rooms.length,
+                  return ListView.builder(
+                    physics: const BouncingScrollPhysics(),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 16,
+                      vertical: 16,
                     ),
+                    itemBuilder: (BuildContext context, int index) {
+                      if (state.selectedHome.rooms.isEmpty) {
+                        return EmptyListItem(
+                          title: 'You don\'t have any room.\nAdd one now',
+                          onPressed: () => Navigator.push<RoomName>(
+                            context,
+                            MaterialPageRoute<RoomName>(
+                              builder: (_) => RoomName(),
+                            ),
+                          ),
+                          icon: MdiIcons.help,
+                        );
+                      } else {
+                        return RoomListItem(
+                          state.selectedHome.rooms[index],
+                          onPressed: () {
+                            Navigator.push<Room>(
+                              context,
+                              MaterialPageRoute<Room>(
+                                builder: (_) => Room(
+                                  state.selectedHome.rooms[index],
+                                ),
+                              ),
+                            );
+                          },
+                        );
+                        return AnimationConfiguration.staggeredList(
+                          position: index,
+                          duration: const Duration(milliseconds: 700),
+                          delay: const Duration(milliseconds: 100),
+                          child: FadeInAnimation(
+                            child: RoomListItem(
+                              state.selectedHome.rooms[index],
+                              onPressed: () {
+                                Navigator.push<Room>(
+                                  context,
+                                  MaterialPageRoute<Room>(
+                                    builder: (_) => Room(
+                                      state.selectedHome.rooms[index],
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        );
+                      }
+                    },
+                    itemCount: state.selectedHome.rooms.isEmpty
+                        ? 1
+                        : state.selectedHome.rooms.length,
                   );
                 },
               ),

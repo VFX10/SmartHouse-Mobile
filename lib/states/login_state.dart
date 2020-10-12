@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:Homey/helpers/firebase.dart';
 import 'package:Homey/helpers/sql_helper/sql_helper.dart';
 import 'package:Homey/helpers/states_manager.dart';
@@ -41,6 +43,8 @@ class LoginState {
     await WebRequestsHelpers.post(route: '/api/login', body: model.toMap()).then(
             (dynamic response) async {
           final dynamic data = response.json();
+          log('login', error: data);
+          log('login', error: data['success']);
           if (data['success'] != null) {
             await (await SharedPreferences.getInstance())
                 .setString('token', data['token']);

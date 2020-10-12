@@ -206,15 +206,14 @@ class _UVSensorPageState extends State<UVSensorPage> {
                                               AsyncSnapshot<DevicePageModel>
                                                   snapshot) {
                                             final bool isNotNull =
-                                                _state.device.data != null;
+                                                _state.device != null && _state.device.data != null;
                                             return Column(
                                               children: <Widget>[
                                                 UVIndexCard(
                                                   uvLevel: UVIndex.low,
                                                   selected: isNotNull &&
                                                       int.parse(_state.device
-                                                              .data['UVIndex']
-                                                              .toString()) >=
+                                                              .data['UVIndex']?? 0) >=
                                                           0 &&
                                                       int.parse(_state.device
                                                               .data['UVIndex']
